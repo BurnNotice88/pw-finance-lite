@@ -2,158 +2,160 @@
 <html lang="de">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>BudgetAI</title>
-
-  <!-- Deine bestehende Styles -->
   <link rel="stylesheet" href="style.css" />
-
-  <!-- Minimaler Fallback-Style für das kleine Login-Panel (stört dein Design nicht) -->
-  <style>
-    .auth-bar{position:fixed;right:12px;top:12px;z-index:9999;
-      background:#fff;border:1px solid #e6e6e6;border-radius:10px;
-      box-shadow:0 6px 18px rgba(0,0,0,.08);padding:10px 12px;
-      display:flex;gap:8px;align-items:center;font:14px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif}
-    .auth-bar input{width:130px;padding:6px 8px;border:1px solid #ddd;border-radius:8px}
-    .auth-bar button{padding:6px 10px;border-radius:8px;border:1px solid #ddd;background:#f7f7f7}
-    .auth-bar .ok{color:#0a8f2f;font-weight:600}
-    .auth-bar .warn{color:#c21f1f;font-weight:600}
-    @media (max-width:420px){.auth-bar input{width:110px}}
-  </style>
 </head>
 <body>
-
-  <!-- ===== Dein bestehendes Seiteninhalt bleibt wie gehabt ===== -->
-  <header style="padding:16px 20px;">
-    <img src="logo.svg" alt="BudgetAI" style="height:24px;vertical-align:middle" onerror="this.style.display='none'">
-    <span style="font-weight:700;font-size:22px;vertical-align:middle">BudgetAI</span>
+  <!-- Header -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">Budget<span class="logo-accent">AI</span><sup>®</sup></span>
+    </div>
+    <div id="userBadge" class="user-badge hidden">
+      <span id="userEmail"></span>
+      <button id="signOutBtn" class="btn ghost">Abmelden</button>
+    </div>
   </header>
 
-  <main id="app">
-    <!-- HIER ist dein bisheriger Inhalt (Übersicht, Karten etc.). 
-         Du musst nichts anfassen – alles bleibt. -->
+  <!-- Auth -->
+  <main id="authSection" class="card auth">
+    <h1>Anmelden</h1>
+    <div class="field">
+      <label for="email">E-Mail</label>
+      <input id="email" type="email" placeholder="name@example.com" autocomplete="username" />
+    </div>
+    <div class="field">
+      <label for="password">Passwort</label>
+      <input id="password" type="password" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+    <div class="row">
+      <button id="signInBtn" class="btn primary">Anmelden</button>
+      <button id="signUpBtn" class="btn">Registrieren</button>
+    </div>
+    <p class="hint">Nur angemeldete Nutzer/innen können lesen & speichern.</p>
+    <p id="authMsg" class="msg"></p>
   </main>
 
-  <!-- ===== Leichte Auth-Bar (kannst du jederzeit entfernen/ausblenden) ===== -->
-  <div class="auth-bar" id="authBar">
-    <span id="authState" class="warn">Abgemeldet</span>
-    <form id="loginForm" style="display:flex;gap:6px;align-items:center;margin:0">
-      <input type="email" id="email" placeholder="E-Mail" autocomplete="username">
-      <input type="password" id="password" placeholder="Passwort" autocomplete="current-password">
-      <button type="submit">Anmelden</button>
-    </form>
-    <button id="logoutBtn" style="display:none">Abmelden</button>
-  </div>
+  <!-- App / Overview -->
+  <main id="appSection" class="hidden">
+    <div class="section">
+      <h2>Übersicht</h2>
 
-  <!-- ===== Deine bestehende App-Logik (wenn vorhanden) ===== -->
-  <!-- <script src="app.js"></script> -->
+      <!-- Wallace -->
+      <article class="card">
+        <header class="card-title">Wallace</header>
+        <div class="row line">
+          <span>Einnahmen</span>
+          <strong id="w-income">–</strong>
+        </div>
+        <div class="row line">
+          <span>Ausgaben</span>
+          <strong id="w-expense">–</strong>
+        </div>
+        <div class="row">
+          <span>Bilanz</span>
+          <strong id="w-balance" class="pos">–</strong>
+        </div>
 
-  <!-- ===== Firebase (CDN, ohne npm) + Mini-API ===== -->
-  <script type="module">
-    // Firebase SDKs (CDN)
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
-    import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+        <details class="edit">
+          <summary>Bearbeiten</summary>
+          <div class="grid2">
+            <div class="field">
+              <label>Ein.</label>
+              <input id="wIncomeInput" type="number" step="0.01" />
+            </div>
+            <div class="field">
+              <label>Aus.</label>
+              <input id="wExpenseInput" type="number" step="0.01" />
+            </div>
+          </div>
+          <button id="wSaveBtn" class="btn small">Speichern</button>
+        </details>
+      </article>
 
-    // Deine Konfiguration (von dir geliefert)
-    const firebaseConfig = {
-      apiKey: "AIzaSyDr9Rpwmyb6CabzD602uq43rf84sJO3Xu8",
-      authDomain: "budgetai-77842.firebaseapp.com",
-      projectId: "budgetai-77842",
-      storageBucket: "budgetai-77842.firebasestorage.app",
-      messagingSenderId: "702742240654",
-      appId: "1:702742240654:web:93be69888bfbdf24e498df",
-      measurementId: "G-PTMSZGRYW4"
-    };
+      <!-- Patricia -->
+      <article class="card">
+        <header class="card-title">Patricia</header>
+        <div class="row line">
+          <span>Einnahmen</span>
+          <strong id="p-income">–</strong>
+        </div>
+        <div class="row line">
+          <span>Ausgaben</span>
+          <strong id="p-expense">–</strong>
+        </div>
+        <div class="row">
+          <span>Bilanz</span>
+          <strong id="p-balance" class="pos">–</strong>
+        </div>
 
-    // Init
-    const app = initializeApp(firebaseConfig);
-    try { getAnalytics(app); } catch(e) { /* Analytics ist optional im Browser */ }
+        <details class="edit">
+          <summary>Bearbeiten</summary>
+          <div class="grid2">
+            <div class="field">
+              <label>Ein.</label>
+              <input id="pIncomeInput" type="number" step="0.01" />
+            </div>
+            <div class="field">
+              <label>Aus.</label>
+              <input id="pExpenseInput" type="number" step="0.01" />
+            </div>
+          </div>
+          <button id="pSaveBtn" class="btn small">Speichern</button>
+        </details>
+      </article>
 
-    const auth = getAuth(app);
-    const db   = getFirestore(app);
+      <!-- Gemeinsam -->
+      <article class="card">
+        <header class="card-title">Gemeinsam</header>
+        <div class="row line">
+          <span>Einnahmen</span>
+          <strong id="s-income">–</strong>
+        </div>
+        <div class="row line">
+          <span>Ausgaben</span>
+          <strong id="s-expense">–</strong>
+        </div>
+        <div class="row">
+          <span>Bilanz</span>
+          <strong id="s-balance" class="pos">–</strong>
+        </div>
 
-    // ===== Mini-API für deine App (global verfügbar) =====
-    async function saveShared(data) {
-      // Speichert gemeinsame Werte (z.B. Einstellungen, Budgets, Summen)
-      const ref = doc(db, "shared", "default");
-      try {
-        // Dokument anlegen/mergen
-        await setDoc(ref, data, { merge: true });
-        return { ok:true };
-      } catch (err) {
-        console.error("saveShared()", err);
-        return { ok:false, error: String(err) };
-      }
-    }
+        <details class="edit">
+          <summary>Bearbeiten</summary>
+          <div class="grid2">
+            <div class="field">
+              <label>Ein.</label>
+              <input id="sIncomeInput" type="number" step="0.01" />
+            </div>
+            <div class="field">
+              <label>Aus.</label>
+              <input id="sExpenseInput" type="number" step="0.01" />
+            </div>
+          </div>
+          <button id="sSaveBtn" class="btn small">Speichern</button>
+        </details>
+      </article>
 
-    async function loadShared() {
-      const ref = doc(db, "shared", "default");
-      try {
-        const snap = await getDoc(ref);
-        return snap.exists() ? snap.data() : {};
-      } catch (err) {
-        console.error("loadShared()", err);
-        return {};
-      }
-    }
+      <!-- Platz für Diagramme -->
+      <section class="card soft">
+        <header class="card-title">Monatsverlauf (Platzhalter)</header>
+        <div class="placeholder">Hier bauen wir später Balken-Charts rein.</div>
+      </section>
+    </div>
+  </main>
 
-    function onAuth(cb) { return onAuthStateChanged(auth, cb); }
-    function signIn(email, password) { return signInWithEmailAndPassword(auth, email, password); }
-    function signOutUser() { return signOut(auth); }
+  <!-- Bottom Tabs (statisch) -->
+  <nav class="tabs">
+    <button class="tab active">Home</button>
+    <button class="tab">Wallace</button>
+    <button class="tab">Patricia</button>
+    <button class="tab">Gemeinsam</button>
+    <button class="tab">Mehr</button>
+  </nav>
 
-    // API global machen
-    window.firebaseAPI = { saveShared, loadShared, onAuth, signIn, signOut: signOutUser };
-
-    // ===== Kleines Login-Panel verknüpfen (für schnellen Test) =====
-    const authStateEl = document.getElementById('authState');
-    const loginForm   = document.getElementById('loginForm');
-    const logoutBtn   = document.getElementById('logoutBtn');
-
-    onAuth((user) => {
-      if (user) {
-        authStateEl.textContent = `Angemeldet: ${user.email}`;
-        authStateEl.className = "ok";
-        loginForm.style.display = "none";
-        logoutBtn.style.display = "inline-block";
-      } else {
-        authStateEl.textContent = "Abgemeldet";
-        authStateEl.className = "warn";
-        loginForm.style.display = "flex";
-        logoutBtn.style.display = "none";
-      }
-    });
-
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('email').value.trim();
-      const pass  = document.getElementById('password').value.trim();
-      try {
-        await signIn(email, pass);
-      } catch (err) {
-        alert("Login fehlgeschlagen: " + err.message);
-      }
-    });
-
-    logoutBtn.addEventListener('click', async () => {
-      try { await signOutUser(); } catch (err) { alert("Fehler beim Abmelden: " + err.message); }
-    });
-
-    // ===== Beispiel: gleich beim Start ein gemeinsames Dokument anlegen (falls leer) =====
-    (async () => {
-      const current = await loadShared();
-      if (!current.__initialized) {
-        await saveShared({
-          __initialized: true,
-          createdAt: new Date().toISOString(),
-          // Du kannst hier Default-Werte setzen:
-          einnahmenGemeinsam: 0,
-          ausgabenGemeinsam: 0
-        });
-      }
-    })();
-  </script>
-
+  <!-- App Code -->
+  <script type="module" src="app.js"></script>
 </body>
 </html>
