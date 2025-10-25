@@ -2,191 +2,165 @@
 <html lang="de">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>FAINANCE®</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FAINANCE</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
   <!-- Header -->
   <header class="app-header">
-    <div class="brand">
-      <span class="brand-text">FAINANCE</span><sup class="reg">®</sup>
-    </div>
+    <h1 class="brand" aria-label="FAINANCE">
+      <span class="brand-f">F</span><span class="brand-ai">AI</span><span class="brand-rest">NANCE</span><sup class="brand-r">®</sup>
+    </h1>
   </header>
 
   <!-- Inhalt -->
-  <main id="app">
-    <!-- Home -->
-    <section id="tab-home" class="tab active">
-      <h1 class="h1">Übersicht</h1>
-
+  <main id="view-container">
+    <section id="view-home" class="view active" aria-labelledby="home-tab">
+      <h2>Übersicht</h2>
       <div class="card">
         <div class="row">
-          <div class="label">Wallace – Einnahmen</div>
-          <div class="value" id="home-w-income">CHF 0.00</div>
+          <div>Wallace – Einnahmen</div><div id="sum-w-income" class="amount"></div>
         </div>
         <div class="row">
-          <div class="label">Ausgaben</div>
-          <div class="value" id="home-w-expense">CHF 0.00</div>
+          <div>Ausgaben</div><div id="sum-w-expense" class="amount"></div>
         </div>
-        <div class="row strong">
-          <div class="label">Bilanz</div>
-          <div class="value positive" id="home-w-balance">CHF 0.00</div>
+        <div class="row total">
+          <div>Bilanz</div><div id="sum-w-balance" class="amount"></div>
         </div>
       </div>
 
       <div class="card">
         <div class="row">
-          <div class="label">Patricia – Einnahmen</div>
-          <div class="value" id="home-p-income">CHF 0.00</div>
+          <div>Patricia – Einnahmen</div><div id="sum-p-income" class="amount"></div>
         </div>
         <div class="row">
-          <div class="label">Ausgaben</div>
-          <div class="value" id="home-p-expense">CHF 0.00</div>
+          <div>Ausgaben</div><div id="sum-p-expense" class="amount"></div>
         </div>
-        <div class="row strong">
-          <div class="label">Bilanz</div>
-          <div class="value positive" id="home-p-balance">CHF 0.00</div>
+        <div class="row total">
+          <div>Bilanz</div><div id="sum-p-balance" class="amount"></div>
         </div>
       </div>
 
       <div class="card">
         <div class="row">
-          <div class="label">Gemeinsam – Einnahmen</div>
-          <div class="value" id="home-g-income">CHF 0.00</div>
+          <div>Gemeinsam – Einnahmen</div><div id="sum-j-income" class="amount"></div>
         </div>
         <div class="row">
-          <div class="label">Ausgaben</div>
-          <div class="value" id="home-g-expense">CHF 0.00</div>
+          <div>Ausgaben</div><div id="sum-j-expense" class="amount"></div>
         </div>
-        <div class="row strong">
-          <div class="label">Bilanz</div>
-          <div class="value positive" id="home-g-balance">CHF 0.00</div>
-        </div>
-      </div>
-
-      <div class="card dashed">
-        <div class="placeholder">Monatsverlauf (Platzhalter)</div>
-      </div>
-    </section>
-
-    <!-- Wallace -->
-    <section id="tab-wallace" class="tab">
-      <h1 class="h1">Wallace</h1>
-      <div class="card">
-        <div class="row">
-          <div class="label">Einnahmen</div>
-          <div class="value" id="w-income">CHF 0.00</div>
-        </div>
-        <div class="row">
-          <div class="label">Ausgaben</div>
-          <div class="value" id="w-expense">CHF 0.00</div>
-        </div>
-        <div class="row strong">
-          <div class="label">Bilanz</div>
-          <div class="value positive" id="w-balance">CHF 0.00</div>
+        <div class="row total">
+          <div>Bilanz</div><div id="sum-j-balance" class="amount"></div>
         </div>
       </div>
     </section>
 
-    <!-- Patricia -->
-    <section id="tab-patricia" class="tab">
-      <h1 class="h1">Patricia</h1>
+    <section id="view-wallace" class="view" aria-labelledby="wallace-tab">
+      <h2>Wallace</h2>
       <div class="card">
-        <div class="row">
-          <div class="label">Einnahmen</div>
-          <div class="value" id="p-income">CHF 0.00</div>
-        </div>
-        <div class="row">
-          <div class="label">Ausgaben</div>
-          <div class="value" id="p-expense">CHF 0.00</div>
-        </div>
-        <div class="row strong">
-          <div class="label">Bilanz</div>
-          <div class="value positive" id="p-balance">CHF 0.00</div>
-        </div>
+        <div class="row"><div>Einnahmen</div><div id="w-income" class="amount"></div></div>
+        <div class="row"><div>Ausgaben</div><div id="w-expense" class="amount"></div></div>
+        <div class="row total"><div>Bilanz</div><div id="w-balance" class="amount"></div></div>
       </div>
     </section>
 
-    <!-- Gemeinsam (berechnet aus Wallace + Patricia) -->
-    <section id="tab-gemeinsam" class="tab">
-      <h1 class="h1">Gemeinsam</h1>
+    <section id="view-patricia" class="view" aria-labelledby="patricia-tab">
+      <h2>Patricia</h2>
       <div class="card">
-        <div class="row">
-          <div class="label">Einnahmen</div>
-          <div class="value" id="g-income">CHF 0.00</div>
-        </div>
-        <div class="row">
-          <div class="label">Ausgaben</div>
-          <div class="value" id="g-expense">CHF 0.00</div>
-        </div>
-        <div class="row strong">
-          <div class="label">Bilanz</div>
-          <div class="value positive" id="g-balance">CHF 0.00</div>
-        </div>
+        <div class="row"><div>Einnahmen</div><div id="p-income" class="amount"></div></div>
+        <div class="row"><div>Ausgaben</div><div id="p-expense" class="amount"></div></div>
+        <div class="row total"><div>Bilanz</div><div id="p-balance" class="amount"></div></div>
       </div>
     </section>
 
-    <!-- Einstellungen (wie früher) -->
-    <section id="tab-settings" class="tab">
-      <h1 class="h1">Einstellungen</h1>
-
-      <!-- Wallace Editor -->
-      <div class="panel">
-        <h2 class="h2">Wallace</h2>
-
-        <h3 class="h3">Einnahmen</h3>
-        <div id="w-income-list" class="form-list"></div>
-        <div class="actions">
-          <button class="btn" data-add="w-income">+ Einnahme hinzufügen</button>
-        </div>
-
-        <h3 class="h3">Ausgaben</h3>
-        <div id="w-expense-list" class="form-list"></div>
-        <div class="actions">
-          <button class="btn" data-add="w-expense">+ Ausgabe hinzufügen</button>
-        </div>
+    <section id="view-joint" class="view" aria-labelledby="joint-tab">
+      <h2>Gemeinsam</h2>
+      <div class="card">
+        <div class="row"><div>Einnahmen</div><div id="j-income" class="amount"></div></div>
+        <div class="row"><div>Ausgaben</div><div id="j-expense" class="amount"></div></div>
+        <div class="row total"><div>Bilanz</div><div id="j-balance" class="amount"></div></div>
       </div>
+    </section>
 
-      <!-- Patricia Editor -->
-      <div class="panel">
-        <h2 class="h2">Patricia</h2>
+    <section id="view-settings" class="view" aria-labelledby="settings-tab">
+      <h2>Einstellungen</h2>
 
-        <h3 class="h3">Einnahmen</h3>
-        <div id="p-income-list" class="form-list"></div>
+      <!-- Hinweis -->
+      <div class="note">Änderungen werden <strong>erst beim Speichern</strong> übernommen.</div>
+
+      <!-- Formulare -->
+      <form id="form-settings" novalidate>
+        <!-- Wallace -->
+        <div class="group">
+          <h3>Wallace</h3>
+          <h4>Einnahmen</h4>
+          <div class="grid">
+            <input data-path="wallace.income[0].name" placeholder="Bezeichnung" />
+            <input data-path="wallace.income[0].value" placeholder="Betrag (CHF)" inputmode="decimal" />
+            <input data-path="wallace.income[1].name" placeholder="Bezeichnung" />
+            <input data-path="wallace.income[1].value" placeholder="Betrag (CHF)" inputmode="decimal" />
+          </div>
+
+          <h4>Ausgaben</h4>
+          <div class="grid">
+            <input data-path="wallace.expense[0].name" placeholder="Bezeichnung" />
+            <input data-path="wallace.expense[0].value" placeholder="Betrag (CHF)" inputmode="decimal" />
+            <input data-path="wallace.expense[1].name" placeholder="Bezeichnung" />
+            <input data-path="wallace.expense[1].value" placeholder="Betrag (CHF)" inputmode="decimal" />
+          </div>
+        </div>
+
+        <!-- Patricia -->
+        <div class="group">
+          <h3>Patricia</h3>
+          <h4>Einnahmen</h4>
+          <div class="grid">
+            <input data-path="patricia.income[0].name" placeholder="Bezeichnung" />
+            <input data-path="patricia.income[0].value" placeholder="Betrag (CHF)" inputmode="decimal" />
+            <input data-path="patricia.income[1].name" placeholder="Bezeichnung" />
+            <input data-path="patricia.income[1].value" placeholder="Betrag (CHF)" inputmode="decimal" />
+          </div>
+
+          <h4>Ausgaben</h4>
+          <div class="grid">
+            <input data-path="patricia.expense[0].name" placeholder="Bezeichnung" />
+            <input data-path="patricia.expense[0].value" placeholder="Betrag (CHF)" inputmode="decimal" />
+            <input data-path="patricia.expense[1].name" placeholder="Bezeichnung" />
+            <input data-path="patricia.expense[1].value" placeholder="Betrag (CHF)" inputmode="decimal" />
+          </div>
+        </div>
+
+        <!-- Gemeinsam -->
+        <div class="group">
+          <h3>Gemeinsam</h3>
+          <h4>Einnahmen</h4>
+          <div class="grid">
+            <input data-path="joint.income[0].name" placeholder="Bezeichnung" />
+            <input data-path="joint.income[0].value" placeholder="Betrag (CHF)" inputmode="decimal" />
+          </div>
+
+          <h4>Ausgaben</h4>
+          <div class="grid">
+            <input data-path="joint.expense[0].name" placeholder="Bezeichnung" />
+            <input data-path="joint.expense[0].value" placeholder="Betrag (CHF)" inputmode="decimal" />
+          </div>
+        </div>
+
         <div class="actions">
-          <button class="btn" data-add="p-income">+ Einnahme hinzufügen</button>
+          <button type="button" id="btn-cancel" class="btn ghost">Zurücksetzen</button>
+          <button type="submit" class="btn primary">Speichern</button>
         </div>
-
-        <h3 class="h3">Ausgaben</h3>
-        <div id="p-expense-list" class="form-list"></div>
-        <div class="actions">
-          <button class="btn" data-add="p-expense">+ Ausgabe hinzufügen</button>
-        </div>
-      </div>
-
-      <div class="panel soft">
-        <div class="actions wrap">
-          <button id="reset-demo" class="btn ghost">Beispieldaten laden</button>
-          <button id="export-json" class="btn ghost">Exportieren (JSON)</button>
-          <label class="file">
-            Importieren (JSON)
-            <input id="import-json" type="file" accept="application/json">
-          </label>
-        </div>
-        <div class="hint">Alle Eingaben werden automatisch gespeichert.</div>
-      </div>
+      </form>
     </section>
   </main>
 
   <!-- Bottom Nav -->
-  <nav class="bottom-nav">
-    <button class="chip active" data-tab="home">Home</button>
-    <button class="chip" data-tab="wallace">Wallace</button>
-    <button class="chip" data-tab="patricia">Patricia</button>
-    <button class="chip" data-tab="gemeinsam">Gemeinsam</button>
-    <button class="chip" data-tab="settings">Einstellungen</button>
+  <nav class="tabbar" aria-label="Navigation">
+    <button id="home-tab" data-target="view-home" class="tab active">Home</button>
+    <button id="wallace-tab" data-target="view-wallace" class="tab">Wallace</button>
+    <button id="patricia-tab" data-target="view-patricia" class="tab">Patricia</button>
+    <button id="joint-tab" data-target="view-joint" class="tab">Gemeinsam</button>
+    <button id="settings-tab" data-target="view-settings" class="tab">Einstellungen</button>
   </nav>
 
   <script src="app.js"></script>
