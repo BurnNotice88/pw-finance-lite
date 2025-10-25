@@ -29,86 +29,76 @@
     <!-- WALLACE -->
     <section id="view-wallace" class="view" aria-labelledby="w-title" role="region">
       <h1 id="w-title" class="title">Wallace</h1>
-      <div class="card form-card">
-        <div class="field">
-          <label for="w-income">Einnahmen (CHF)</label>
-          <input id="w-income" type="number" inputmode="decimal" step="0.05" />
-        </div>
-        <div class="field">
-          <label for="w-expense">Ausgaben (CHF)</label>
-          <input id="w-expense" type="number" inputmode="decimal" step="0.05" />
-        </div>
-        <button id="w-save" class="btn primary">Speichern</button>
-      </div>
       <div id="w-summary" class="card"></div>
     </section>
 
     <!-- PATRICIA -->
     <section id="view-patricia" class="view" aria-labelledby="p-title" role="region">
       <h1 id="p-title" class="title">Patricia</h1>
-      <div class="card form-card">
-        <div class="field">
-          <label for="p-income">Einnahmen (CHF)</label>
-          <input id="p-income" type="number" inputmode="decimal" step="0.05" />
-        </div>
-        <div class="field">
-          <label for="p-expense">Ausgaben (CHF)</label>
-          <input id="p-expense" type="number" inputmode="decimal" step="0.05" />
-        </div>
-        <button id="p-save" class="btn primary">Speichern</button>
-      </div>
       <div id="p-summary" class="card"></div>
     </section>
 
     <!-- GEMEINSAM -->
     <section id="view-gemeinsam" class="view" aria-labelledby="g-title" role="region">
       <h1 id="g-title" class="title">Gemeinsam</h1>
-      <div class="card form-card">
-        <div class="field">
-          <label for="g-income">Einnahmen (CHF)</label>
-          <input id="g-income" type="number" inputmode="decimal" step="0.05" />
-        </div>
-        <div class="field">
-          <label for="g-expense">Ausgaben (CHF)</label>
-          <input id="g-expense" type="number" inputmode="decimal" step="0.05" />
-        </div>
-        <button id="g-save" class="btn primary">Speichern</button>
-      </div>
       <div id="g-summary" class="card"></div>
     </section>
 
-    <!-- MEHR -->
+    <!-- MEHR (Zentrales Bearbeiten) -->
     <section id="view-mehr" class="view" aria-labelledby="more-title" role="region">
       <h1 id="more-title" class="title">Mehr</h1>
 
       <div class="card">
+        <h2 class="subtitle">Einnahmen & Ausgaben bearbeiten (zentral)</h2>
+
+        <form id="form-mehr" class="mehr-grid">
+          <!-- Wallace -->
+          <fieldset class="mehr-section">
+            <legend>Wallace</legend>
+            <label class="field">
+              <span>Einnahmen (CHF)</span>
+              <input id="mw-income" name="mw-income" type="number" inputmode="decimal" step="0.05" />
+            </label>
+            <label class="field">
+              <span>Ausgaben (CHF)</span>
+              <input id="mw-expense" name="mw-expense" type="number" inputmode="decimal" step="0.05" />
+            </label>
+          </fieldset>
+
+          <!-- Patricia -->
+          <fieldset class="mehr-section">
+            <legend>Patricia</legend>
+            <label class="field">
+              <span>Einnahmen (CHF)</span>
+              <input id="mp-income" name="mp-income" type="number" inputmode="decimal" step="0.05" />
+            </label>
+            <label class="field">
+              <span>Ausgaben (CHF)</span>
+              <input id="mp-expense" name="mp-expense" type="number" inputmode="decimal" step="0.05" />
+            </label>
+          </fieldset>
+
+          <!-- Gemeinsam -->
+          <fieldset class="mehr-section">
+            <legend>Gemeinsam</legend>
+            <label class="field">
+              <span>Einnahmen (CHF)</span>
+              <input id="mg-income" name="mg-income" type="number" inputmode="decimal" step="0.05" />
+            </label>
+            <label class="field">
+              <span>Ausgaben (CHF)</span>
+              <input id="mg-expense" name="mg-expense" type="number" inputmode="decimal" step="0.05" />
+            </label>
+          </fieldset>
+
+          <div class="mehr-actions">
+            <button id="btn-save-all" class="btn primary" type="submit">Alle speichern</button>
+            <button id="btn-reset-defaults" class="btn danger" type="button">Auf Standardwerte zurücksetzen</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
         <h2 class="subtitle">Daten exportieren / importieren</h2>
         <div class="btn-row">
-          <button id="btn-export" class="btn">Export (Datei)</button>
-          <button id="btn-copy" class="btn">Export (Zwischenablage)</button>
-        </div>
-        <div class="field">
-          <label for="import-text">Import (JSON einfügen)</label>
-          <textarea id="import-text" rows="4" placeholder='{"wallace":{"income":0,"expense":0}, ...}'></textarea>
-        </div>
-        <div class="btn-row">
-          <button id="btn-import" class="btn primary">Import anwenden</button>
-          <button id="btn-clear" class="btn danger">Alle lokalen Daten löschen</button>
-        </div>
-        <p class="hint">Hinweis: Aktuell werden Daten lokal auf diesem Gerät gespeichert. Für Sync zwischen Geräten aktivieren wir später wieder Cloud-Speicher.</p>
-      </div>
-    </section>
-  </main>
-
-  <!-- Tabs unten -->
-  <nav class="tabbar" role="tablist" aria-label="Navigation">
-    <button class="tab is-active" data-target="home"    role="tab" aria-selected="true">Home</button>
-    <button class="tab"           data-target="wallace" role="tab" aria-selected="false">Wallace</button>
-    <button class="tab"           data-target="patricia"role="tab" aria-selected="false">Patricia</button>
-    <button class="tab"           data-target="gemeinsam"role="tab" aria-selected="false">Gemeinsam</button>
-    <button class="tab"           data-target="mehr"    role="tab" aria-selected="false">Mehr</button>
-  </nav>
-
-  <script src="app.js" defer></script>
-</body>
-</html>
+          <button id="btn-export" class="btn">Export (Datei)</
