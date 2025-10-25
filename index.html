@@ -7,95 +7,87 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Header mit kleinem Logo links -->
-  <header class="topbar">
-    <div class="topbar-left">
-      <img src="IMG_4855.png" alt="FAINANCE Logo" class="logo" />
+
+  <!-- Fixer Header: links Logo, mittig Monat (rot/fein), rechts Platzhalter für Balance -->
+  <header class="app-header">
+    <div class="header-left">
+      <!-- Logo klein & dezent -->
+      <img src="IMG_4855.png" alt="FAINANCE" class="logo" />
     </div>
 
-    <!-- Monatswahl zentriert -->
-    <div class="month-selector" aria-label="Monat wählen">
-      <button id="prevMonth" class="icon-btn" aria-label="Vorheriger Monat" type="button">‹</button>
-      <div class="month-pill">
-        <span id="monthLabel" class="month-label">—</span>
+    <div class="header-center">
+      <div class="month-nav">
+        <button class="nav-btn" id="prevMonth" aria-label="Vorheriger Monat">‹</button>
+        <div class="month-display" id="monthDisplay">—</div>
+        <button class="nav-btn" id="nextMonth" aria-label="Nächster Monat">›</button>
       </div>
-      <button id="nextMonth" class="icon-btn" aria-label="Nächster Monat" type="button">›</button>
     </div>
 
-    <div class="topbar-right"><!-- leer (bewusst) --></div>
+    <div class="header-right"><!-- reserviert, z.B. für Sync-Icon --></div>
   </header>
 
-  <main id="view-container">
-    <!-- Home (Dashboard) -->
-    <section id="view-home" class="view active">
-      <div class="section-title">Bilanz aktuell (Monat)</div>
-      <div class="card">
-        <div class="row">
-          <div>Gesamt</div>
-          <div id="sumBalance" class="amount pos">CHF 0.00</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <h3>Wallace</h3><span class="badge">IST</span>
-        </div>
-        <div class="row"><div>Einnahmen</div><div id="wInc" class="amount">CHF 0.00</div></div>
-        <div class="row"><div>Ausgaben</div><div id="wExp" class="amount">CHF 0.00</div></div>
-        <div class="row strong"><div>Bilanz</div><div id="wBal" class="amount">CHF 0.00</div></div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <h3>Patricia</h3><span class="badge">IST</span>
-        </div>
-        <div class="row"><div>Einnahmen</div><div id="pInc" class="amount">CHF 0.00</div></div>
-        <div class="row"><div>Ausgaben</div><div id="pExp" class="amount">CHF 0.00</div></div>
-        <div class="row strong"><div>Bilanz</div><div id="pBal" class="amount">CHF 0.00</div></div>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <h3>Gemeinsam</h3><span class="badge">IST</span>
-        </div>
-        <div class="row"><div>Einnahmen</div><div id="gInc" class="amount">CHF 0.00</div></div>
-        <div class="row"><div>Ausgaben</div><div id="gExp" class="amount">CHF 0.00</div></div>
-        <div class="row strong"><div>Bilanz</div><div id="gBal" class="amount">CHF 0.00</div></div>
+  <!-- Seite: Abstand damit der fixe Header nichts überlappt -->
+  <main class="page">
+    <section class="card">
+      <h2>Bilanz aktuell (Monat)</h2>
+      <div class="row">
+        <span>Gesamt</span>
+        <strong id="sumGesamt">CHF 0.00</strong>
       </div>
     </section>
 
-    <!-- Wallace -->
-    <section id="view-wallace" class="view">
-      <div class="section-title">Wallace – Übersicht</div>
-      <div class="card muted"><p>Hier kommt Inhalt für Wallace …</p></div>
+    <section class="card">
+      <h3>Wallace <span class="pill">IST</span></h3>
+      <div class="row"><span>Einnahmen</span><strong id="wIn">CHF 0.00</strong></div>
+      <div class="row"><span>Ausgaben</span><strong id="wOut">CHF 0.00</strong></div>
+      <div class="row"><span>Bilanz</span><strong id="wBal">CHF 0.00</strong></div>
     </section>
 
-    <!-- Patricia -->
-    <section id="view-patricia" class="view">
-      <div class="section-title">Patricia – Übersicht</div>
-      <div class="card muted"><p>Hier kommt Inhalt für Patricia …</p></div>
+    <section class="card">
+      <h3>Patricia <span class="pill">IST</span></h3>
+      <div class="row"><span>Einnahmen</span><strong id="pIn">CHF 0.00</strong></div>
+      <div class="row"><span>Ausgaben</span><strong id="pOut">CHF 0.00</strong></div>
+      <div class="row"><span>Bilanz</span><strong id="pBal">CHF 0.00</strong></div>
     </section>
 
-    <!-- Gemeinsam -->
-    <section id="view-gemeinsam" class="view">
-      <div class="section-title">Gemeinsam – Übersicht</div>
-      <div class="card muted"><p>Hier kommt Inhalt für „Gemeinsam“ …</p></div>
+    <section class="card">
+      <h3>Gemeinsam <span class="pill">IST</span></h3>
+      <div class="row"><span>Einnahmen</span><strong id="gIn">CHF 0.00</strong></div>
+      <div class="row"><span>Ausgaben</span><strong id="gOut">CHF 0.00</strong></div>
+      <div class="row"><span>Bilanz</span><strong id="gBal">CHF 0.00</strong></div>
     </section>
 
-    <!-- Einstellungen -->
-    <section id="view-settings" class="view">
-      <div class="section-title">Einstellungen</div>
-      <div class="card muted"><p>Hier bearbeitest du später alles – aktuell nur Platzhalter.</p></div>
+    <section class="card">
+      <h2>Schulden Übersicht</h2>
+      <div class="row"><span>Wallace</span><strong id="wDebt">CHF 0.00</strong></div>
+      <div class="row"><span>Patricia</span><strong id="pDebt">CHF 0.00</strong></div>
     </section>
+
+    <div class="spacer-bottom"></div>
   </main>
 
-  <!-- Bottom Navigation (immer sichtbar) -->
+  <!-- Fixe Bottom-Nav (bleibt immer sichtbar) -->
   <nav class="tabbar">
-    <button class="tab active" data-target="home"><span class="tab-ico">🏠</span><span>Home</span></button>
-    <button class="tab" data-target="wallace"><span class="tab-ico">👤</span><span>Wallace</span></button>
-    <button class="tab" data-target="patricia"><span class="tab-ico">👩🏼‍🦱</span><span>Patricia</span></button>
-    <button class="tab" data-target="gemeinsam"><span class="tab-ico">👥</span><span>Gemeinsam</span></button>
-    <button class="tab" data-target="settings"><span class="tab-ico">⚙️</span><span>Einstellungen</span></button>
+    <a class="tab active" data-tab="home">
+      <span class="tab-ico">🏠</span>
+      <span class="tab-txt">Home</span>
+    </a>
+    <a class="tab" data-tab="wallace">
+      <span class="tab-ico">👤</span>
+      <span class="tab-txt">Wallace</span>
+    </a>
+    <a class="tab" data-tab="patricia">
+      <span class="tab-ico">👤</span>
+      <span class="tab-txt">Patricia</span>
+    </a>
+    <a class="tab" data-tab="gemeinsam">
+      <span class="tab-ico">👥</span>
+      <span class="tab-txt">Gemeinsam</span>
+    </a>
+    <a class="tab" data-tab="settings">
+      <span class="tab-ico">⚙️</span>
+      <span class="tab-txt">Einstellungen</span>
+    </a>
   </nav>
 
   <script src="app.js"></script>
