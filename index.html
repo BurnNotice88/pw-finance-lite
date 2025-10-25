@@ -101,4 +101,31 @@
       <div class="card">
         <h2 class="subtitle">Daten exportieren / importieren</h2>
         <div class="btn-row">
-          <button id="btn-export" class="btn">Export (Datei)</
+          <button id="btn-export" class="btn">Export (Datei)</button>
+          <button id="btn-copy" class="btn">Export (Zwischenablage)</button>
+        </div>
+        <div class="field">
+          <label for="import-text">Import (JSON einfügen)</label>
+          <textarea id="import-text" rows="4" placeholder='{"wallace":{"income":0,"expense":0},"patricia":{...},"gemeinsam":{...}}'></textarea>
+        </div>
+        <div class="btn-row">
+          <button id="btn-import" class="btn primary">Import anwenden</button>
+          <button id="btn-clear" class="btn danger">Alle lokalen Daten löschen</button>
+        </div>
+        <p class="hint">Speicherung erfolgt lokal auf diesem Gerät (localStorage). Für Sync zwischen Geräten schalten wir später Cloud-Speicher wieder zu.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Tabs unten -->
+  <nav class="tabbar" role="tablist" aria-label="Navigation">
+    <button class="tab is-active" data-target="home"     role="tab" aria-selected="true">Home</button>
+    <button class="tab"           data-target="wallace"  role="tab" aria-selected="false">Wallace</button>
+    <button class="tab"           data-target="patricia" role="tab" aria-selected="false">Patricia</button>
+    <button class="tab"           data-target="gemeinsam"role="tab" aria-selected="false">Gemeinsam</button>
+    <button class="tab"           data-target="mehr"     role="tab" aria-selected="false">Mehr</button>
+  </nav>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
