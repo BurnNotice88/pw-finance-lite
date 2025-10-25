@@ -2,7 +2,8 @@
    FAINANCE – Basis-App (ohne Cloud)
    - Tabs & Views
    - State mit localStorage
-   - Übersicht + Edit-Seiten
+   - Übersicht + Zusammenfassungen
+   - Zentrale Bearbeitung in "Mehr"
    - Export/Import
    - Kleiner Canvas-Balken-Chart (Demo)
 =========================== */
@@ -38,6 +39,9 @@ const CHF = (n) => Number(n||0).toLocaleString('de-CH',{style:'currency',currenc
     if (saved && views[saved]) start = saved;
   } catch {}
   show(start);
+
+  // Expose for later usage if needed
+  window.__show = show;
 })();
 
 // ---- State (mit Defaults) + Storage
@@ -68,62 +72,66 @@ function saveState(s){
 let STATE = loadState();
 
 // ---- Rendering
-function cardHTML(title, data){
-  const bal = Number(data.income||0) - Number(data.expense||0);
+function sectionCard(title, obj){
+  const bal = Number(obj.income||0) - Number(obj.expense||0);
   const cls = bal>=0 ? 'positive' : 'negative';
   return `
     <article class="card">
-      <div class="row"><strong>${title}</strong> – <span class="muted">Einnahmen</span><span class="amount" style="margin-left:auto">${CHF(data.income)}</span></div>
-      <div class="row"><span>Ausgaben</span><span class="amount">${CHF(data.expense)}</span></div>
-      <div class="row"><span>Bilanz</span><span class="amount ${cls}">${CHF(bal)}</span></div>
+      <div class="row"><strong>${title}</strong><span>${CHF(obj.income)}</span></div>
+      <div class="row"><span>Ausgaben</span><span>${CHF(obj.expense)}</span></div>
+      <div class="row"><span>Bilanz</span><span class="${cls}">${CHF(bal)}</span></div>
     </article>
   `;
 }
 
 function renderHome(){
-  const box = $('#home-cards');
-  box.innerHTML = [
-    cardHTML('Wallace',   STATE.wallace),
-    cardHTML('Patricia',  STATE.patricia),
-    cardHTML('Gemeinsam', STATE.gemeinsam),
+  $('#home-cards').innerHTML = [
+    sectionCard('Wallace',   STATE.wallace),
+    sectionCard('Patricia',  STATE.patricia),
+    sectionCard('Gemeinsam', STATE.gemeinsam),
   ].join('');
 }
 
-function fillForms(){
-  $('#w-income').value = STATE.wallace.income;
-  $('#w-expense').value = STATE.wallace.expense;
-  $('#p-income').value = STATE.patricia.income;
-  $('#p-expense').value = STATE.patricia.expense;
-  $('#g-income').value = STATE.gemeinsam.income;
-  $('#g-expense').value = STATE.gemeinsam.expense;
-  renderSummaries();
-}
-
 function renderSummaries(){
-  const w = STATE.wallace, p = STATE.patricia, g = STATE.gemeinsam;
-  const wBal = w.income - w.expense, pBal = p.income - p.expense, gBal = g.income - g.expense;
-  $('#w-summary').innerHTML = cardHTML('Wallace', w);
-  $('#p-summary').innerHTML = cardHTML('Patricia', p);
-  $('#g-summary').innerHTML = cardHTML('Gemeinsam', g);
+  $('#w-summary').innerHTML = sectionCard('Wallace',   STATE.wallace);
+  $('#p-summary').innerHTML = sectionCard('Patricia',  STATE.patricia);
+  $('#g-summary').innerHTML = sectionCard('Gemeinsam', STATE.gemeinsam);
 }
 
-// ---- Save Buttons
+// ---- Mehr-Form (zentral)
+function fillMehrForm(){
+  $('#mw-income').value  = STATE.wallace.income;
+  $('#mw-expense').value = STATE.wallace.expense;
+  $('#mp-income').value  = STATE.patricia.income;
+  $('#mp-expense').value = STATE.patricia.expense;
+  $('#mg-income').value  = STATE.gemeinsam.income;
+  $('#mg-expense').value = STATE.gemeinsam.expense;
+}
+
 function num(v){ const n = Number(String(v).replace(/[^0-9.\-]/g,'')); return isNaN(n)?0:n; }
 
-$('#w-save').addEventListener('click', ()=>{
-  STATE.wallace.income  = num($('#w-income').value);
-  STATE.wallace.expense = num($('#w-expense').value);
-  saveState(STATE); renderHome(); renderSummaries();
+$('#form-mehr').addEventListener('submit', (e)=>{
+  e.preventDefault();
+  STATE.wallace.income   = num($('#mw-income').value);
+  STATE.wallace.expense  = num($('#mw-expense').value);
+  STATE.patricia.income  = num($('#mp-income').value);
+  STATE.patricia.expense = num($('#mp-expense').value);
+  STATE.gemeinsam.income = num($('#mg-income').value);
+  STATE.gemeinsam.expense= num($('#mg-expense').value);
+
+  saveState(STATE);
+  renderHome();
+  renderSummaries();
+  alert('Gespeichert.');
 });
-$('#p-save').addEventListener('click', ()=>{
-  STATE.patricia.income  = num($('#p-income').value);
-  STATE.patricia.expense = num($('#p-expense').value);
-  saveState(STATE); renderHome(); renderSummaries();
-});
-$('#g-save').addEventListener('click', ()=>{
-  STATE.gemeinsam.income  = num($('#g-income').value);
-  STATE.gemeinsam.expense = num($('#g-expense').value);
-  saveState(STATE); renderHome(); renderSummaries();
+
+$('#btn-reset-defaults').addEventListener('click', ()=>{
+  if(!confirm('Werte auf Standard zurücksetzen?')) return;
+  STATE = structuredClone(DEFAULT_STATE);
+  saveState(STATE);
+  fillMehrForm();
+  renderHome();
+  renderSummaries();
 });
 
 // ---- Export / Import / Clear
@@ -143,7 +151,7 @@ $('#btn-copy').addEventListener('click', async ()=>{
 });
 
 $('#btn-import').addEventListener('click', ()=>{
-  const raw = $('#import-text').value.trim();
+  const raw = document.getElementById('import-text').value.trim();
   if(!raw){ alert('Bitte JSON einfügen.'); return; }
   try{
     const incoming = JSON.parse(raw);
@@ -153,7 +161,7 @@ $('#btn-import').addEventListener('click', ()=>{
       gemeinsam: { ...DEFAULT_STATE.gemeinsam, ...(incoming.gemeinsam||{}) },
     };
     saveState(STATE);
-    fillForms(); renderHome();
+    fillMehrForm(); renderHome(); renderSummaries();
     alert('Import erfolgreich.');
   }catch(e){
     alert('Ungültiges JSON.');
@@ -164,14 +172,14 @@ $('#btn-clear').addEventListener('click', ()=>{
   if(confirm('Alle lokalen Daten wirklich löschen?')) {
     try{ localStorage.removeItem('fainance:state'); }catch{}
     STATE = structuredClone(DEFAULT_STATE);
-    fillForms(); renderHome();
+    fillMehrForm(); renderHome(); renderSummaries();
     alert('Zurückgesetzt.');
   }
 });
 
 // ---- Mini Balken-Chart (Beispiel)
 (function initChart(){
-  const canvas = $('#chart-balance');
+  const canvas = document.getElementById('chart-balance');
   if(!canvas) return;
 
   const example = [
@@ -232,4 +240,5 @@ $('#btn-clear').addEventListener('click', ()=>{
 
 // ---- Initial render
 renderHome();
-fillForms();
+renderSummaries();
+fillMehrForm();
