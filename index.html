@@ -2,57 +2,72 @@
 <html lang="de">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>BudgetAI</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-  <!-- Kopf -->
-  <header class="app-header">
-    <div class="brand"><span class="logo">Budget<span class="logo-ai">AI</span></span></div>
+  <header class="topbar">
+    <div class="brand">Budget<span class="ai">AI</span></div>
   </header>
 
-  <!-- Screens -->
-  <main class="screens">
-    <section id="screen-home" class="screen active" aria-labelledby="tab-home">
+  <main id="views">
+    <!-- HOME -->
+    <section id="view-home" class="view active" aria-label="Übersicht">
       <h1>Übersicht</h1>
-      <div class="card">Home-Inhalte …</div>
+      <div id="home-cards" class="cards"></div>
+      <div class="chart-placeholder">
+        Hier bauen wir später Balken-Charts rein.
+      </div>
     </section>
 
-    <section id="screen-wallace" class="screen" aria-labelledby="tab-wallace">
+    <!-- WALLACE -->
+    <section id="view-wallace" class="view" aria-label="Wallace">
       <h1>Wallace</h1>
-      <div class="card">Wallace-Inhalte …</div>
+      <div id="wallace-cards" class="cards"></div>
     </section>
 
-    <section id="screen-patricia" class="screen" aria-labelledby="tab-patricia">
+    <!-- PATRICIA -->
+    <section id="view-patricia" class="view" aria-label="Patricia">
       <h1>Patricia</h1>
-      <div class="card">Patricia-Inhalte …</div>
+      <div id="patricia-cards" class="cards"></div>
     </section>
 
-    <section id="screen-gemeinsam" class="screen" aria-labelledby="tab-gemeinsam">
+    <!-- GEMEINSAM -->
+    <section id="view-gemeinsam" class="view" aria-label="Gemeinsam">
       <h1>Gemeinsam</h1>
-      <div class="card">Gemeinsame Inhalte …</div>
+      <div id="gemeinsam-cards" class="cards"></div>
     </section>
 
-    <section id="screen-more" class="screen" aria-labelledby="tab-more">
+    <!-- MEHR -->
+    <section id="view-mehr" class="view" aria-label="Mehr">
       <h1>Mehr</h1>
-      <div class="card">Einstellungen / Login / Export …</div>
+      <div class="cards">
+        <div class="card">
+          <div class="row">
+            <span>Einstellungen</span>
+            <span>›</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="row">
+            <span>Über</span>
+            <span>BudgetAI</span>
+          </div>
+        </div>
+      </div>
     </section>
   </main>
 
-  <!-- Toast (kann Fehlermeldungen zeigen, blockiert aber keine Klicks) -->
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-  <!-- Tabbar (fix am unteren Rand) -->
-  <nav class="tabbar" role="tablist" aria-label="Navigation">
-    <button id="tab-home" class="tab active" role="tab" aria-selected="true" data-target="screen-home">Home</button>
-    <button id="tab-wallace" class="tab" role="tab" aria-selected="false" data-target="screen-wallace">Wallace</button>
-    <button id="tab-patricia" class="tab" role="tab" aria-selected="false" data-target="screen-patricia">Patricia</button>
-    <button id="tab-gemeinsam" class="tab" role="tab" aria-selected="false" data-target="screen-gemeinsam">Gemeinsam</button>
-    <button id="tab-more" class="tab" role="tab" aria-selected="false" data-target="screen-more">Mehr</button>
+  <!-- Bottom Tabs -->
+  <nav class="tabs" role="tablist" aria-label="Hauptnavigation">
+    <button class="tab active" data-target="home" role="tab" aria-selected="true">Home</button>
+    <button class="tab" data-target="wallace" role="tab" aria-selected="false">Wallace</button>
+    <button class="tab" data-target="patricia" role="tab" aria-selected="false">Patricia</button>
+    <button class="tab" data-target="gemeinsam" role="tab" aria-selected="false">Gemeinsam</button>
+    <button class="tab" data-target="mehr" role="tab" aria-selected="false">Mehr</button>
   </nav>
 
-  <script type="module" src="app.js"></script>
+  <script src="app.js" defer></script>
 </body>
 </html>
