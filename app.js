@@ -1,244 +1,223 @@
-/* ===========================
-   FAINANCE – Basis-App (ohne Cloud)
-   - Tabs & Views
-   - State mit localStorage
-   - Übersicht + Zusammenfassungen
-   - Zentrale Bearbeitung in "Mehr"
-   - Export/Import
-   - Kleiner Canvas-Balken-Chart (Demo)
-=========================== */
+// ---------- Datenhaltung ----------
+const LS_KEY = 'fainance:data';
 
-// ---- Utility
-const $  = (sel) => document.querySelector(sel);
-const CHF = (n) => Number(n||0).toLocaleString('de-CH',{style:'currency',currency:'CHF'});
-
-// ---- Tabs / Views
-(function initTabs(){
-  const tabs = Array.from(document.querySelectorAll('.tabbar .tab'));
-  const views = {
-    home:      $('#view-home'),
-    wallace:   $('#view-wallace'),
-    patricia:  $('#view-patricia'),
-    gemeinsam: $('#view-gemeinsam'),
-    mehr:      $('#view-mehr'),
-  };
-
-  function show(name){
-    Object.values(views).forEach(v=>v.classList.remove('is-active'));
-    (views[name]||views.home).classList.add('is-active');
-    tabs.forEach(t => t.classList.toggle('is-active', t.dataset.target===name));
-    try{ localStorage.setItem('fainance:lastTab', name); }catch{}
-    window.scrollTo({top:0,behavior:'instant'});
-  }
-
-  tabs.forEach(btn => btn.addEventListener('click', ()=> show(btn.dataset.target)));
-
-  let start = 'home';
-  try {
-    const saved = localStorage.getItem('fainance:lastTab');
-    if (saved && views[saved]) start = saved;
-  } catch {}
-  show(start);
-
-  // Expose for later usage if needed
-  window.__show = show;
-})();
-
-// ---- State (mit Defaults) + Storage
-const DEFAULT_STATE = {
-  wallace:   { income: 5550, expense: 2360 },
-  patricia:  { income: 5200, expense: 2220 },
-  gemeinsam: { income: 10750, expense: 4580 }
+const demoData = {
+  wallace: {
+    income: [
+      { label: 'Lohn', amount: 5550 },
+    ],
+    expenses: [
+      { label: 'Miete', amount: 1650 },
+      { label: 'Versicherungen', amount: 310 },
+      { label: 'Lebensmittel', amount: 500 },
+    ],
+  },
+  patricia: {
+    income: [
+      { label: 'Lohn', amount: 5200 },
+      { label: 'Salon-Bonus', amount: 400 },
+    ],
+    expenses: [
+      { label: 'Miete', amount: 1400 },
+      { label: 'Versicherungen', amount: 210 },
+      { label: 'ÖV/Auto', amount: 110 },
+      { label: 'Lebensmittel', amount: 500 },
+    ],
+  },
 };
 
-function loadState(){
-  try{
-    const raw = localStorage.getItem('fainance:state');
-    if(!raw) return structuredClone(DEFAULT_STATE);
-    const parsed = JSON.parse(raw);
-    // merge defaults (falls keys fehlen)
-    return {
-      wallace:   { ...DEFAULT_STATE.wallace,   ...(parsed.wallace||{}) },
-      patricia:  { ...DEFAULT_STATE.patricia,  ...(parsed.patricia||{}) },
-      gemeinsam: { ...DEFAULT_STATE.gemeinsam, ...(parsed.gemeinsam||{}) },
-    };
-  }catch{
-    return structuredClone(DEFAULT_STATE);
-  }
-}
-function saveState(s){
-  try{ localStorage.setItem('fainance:state', JSON.stringify(s)); }catch{}
-}
-let STATE = loadState();
-
-// ---- Rendering
-function sectionCard(title, obj){
-  const bal = Number(obj.income||0) - Number(obj.expense||0);
-  const cls = bal>=0 ? 'positive' : 'negative';
-  return `
-    <article class="card">
-      <div class="row"><strong>${title}</strong><span>${CHF(obj.income)}</span></div>
-      <div class="row"><span>Ausgaben</span><span>${CHF(obj.expense)}</span></div>
-      <div class="row"><span>Bilanz</span><span class="${cls}">${CHF(bal)}</span></div>
-    </article>
-  `;
-}
-
-function renderHome(){
-  $('#home-cards').innerHTML = [
-    sectionCard('Wallace',   STATE.wallace),
-    sectionCard('Patricia',  STATE.patricia),
-    sectionCard('Gemeinsam', STATE.gemeinsam),
-  ].join('');
-}
-
-function renderSummaries(){
-  $('#w-summary').innerHTML = sectionCard('Wallace',   STATE.wallace);
-  $('#p-summary').innerHTML = sectionCard('Patricia',  STATE.patricia);
-  $('#g-summary').innerHTML = sectionCard('Gemeinsam', STATE.gemeinsam);
-}
-
-// ---- Mehr-Form (zentral)
-function fillMehrForm(){
-  $('#mw-income').value  = STATE.wallace.income;
-  $('#mw-expense').value = STATE.wallace.expense;
-  $('#mp-income').value  = STATE.patricia.income;
-  $('#mp-expense').value = STATE.patricia.expense;
-  $('#mg-income').value  = STATE.gemeinsam.income;
-  $('#mg-expense').value = STATE.gemeinsam.expense;
-}
-
-function num(v){ const n = Number(String(v).replace(/[^0-9.\-]/g,'')); return isNaN(n)?0:n; }
-
-$('#form-mehr').addEventListener('submit', (e)=>{
-  e.preventDefault();
-  STATE.wallace.income   = num($('#mw-income').value);
-  STATE.wallace.expense  = num($('#mw-expense').value);
-  STATE.patricia.income  = num($('#mp-income').value);
-  STATE.patricia.expense = num($('#mp-expense').value);
-  STATE.gemeinsam.income = num($('#mg-income').value);
-  STATE.gemeinsam.expense= num($('#mg-expense').value);
-
-  saveState(STATE);
-  renderHome();
-  renderSummaries();
-  alert('Gespeichert.');
-});
-
-$('#btn-reset-defaults').addEventListener('click', ()=>{
-  if(!confirm('Werte auf Standard zurücksetzen?')) return;
-  STATE = structuredClone(DEFAULT_STATE);
-  saveState(STATE);
-  fillMehrForm();
-  renderHome();
-  renderSummaries();
-});
-
-// ---- Export / Import / Clear
-$('#btn-export').addEventListener('click', ()=>{
-  const blob = new Blob([JSON.stringify(STATE,null,2)], {type:'application/json'});
-  const url  = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'fainance-data.json';
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(()=>URL.revokeObjectURL(url), 1000);
-});
-
-$('#btn-copy').addEventListener('click', async ()=>{
-  const text = JSON.stringify(STATE);
-  try{ await navigator.clipboard.writeText(text); alert('In Zwischenablage kopiert.'); }
-  catch{ prompt('Kopieren mit Auswahl (manuell):', text); }
-});
-
-$('#btn-import').addEventListener('click', ()=>{
-  const raw = document.getElementById('import-text').value.trim();
-  if(!raw){ alert('Bitte JSON einfügen.'); return; }
-  try{
-    const incoming = JSON.parse(raw);
-    STATE = {
-      wallace:   { ...DEFAULT_STATE.wallace,   ...(incoming.wallace||{}) },
-      patricia:  { ...DEFAULT_STATE.patricia,  ...(incoming.patricia||{}) },
-      gemeinsam: { ...DEFAULT_STATE.gemeinsam, ...(incoming.gemeinsam||{}) },
-    };
-    saveState(STATE);
-    fillMehrForm(); renderHome(); renderSummaries();
-    alert('Import erfolgreich.');
-  }catch(e){
-    alert('Ungültiges JSON.');
-  }
-});
-
-$('#btn-clear').addEventListener('click', ()=>{
-  if(confirm('Alle lokalen Daten wirklich löschen?')) {
-    try{ localStorage.removeItem('fainance:state'); }catch{}
-    STATE = structuredClone(DEFAULT_STATE);
-    fillMehrForm(); renderHome(); renderSummaries();
-    alert('Zurückgesetzt.');
-  }
-});
-
-// ---- Mini Balken-Chart (Beispiel)
-(function initChart(){
-  const canvas = document.getElementById('chart-balance');
-  if(!canvas) return;
-
-  const example = [
-    { label:'Jan', value: 4800 },
-    { label:'Feb', value: 5150 },
-    { label:'Mär', value: 4970 },
-    { label:'Apr', value: 5580 },
-    { label:'Mai', value: 6170 },
-    { label:'Jun', value: 5920 },
-  ];
-
-  function draw(){
-    const dpr = window.devicePixelRatio || 1;
-    const cssW = canvas.clientWidth || 300;
-    const cssH = canvas.clientHeight || 220;
-    canvas.width = Math.max(1, Math.floor(cssW * dpr));
-    canvas.height = Math.max(1, Math.floor(cssH * dpr));
-    const ctx = canvas.getContext('2d');
-    ctx.scale(dpr, dpr);
-
-    const P = { top: 12, right: 12, bottom: 28, left: 36 };
-    const W = cssW - P.left - P.right;
-    const H = cssH - P.top - P.bottom;
-
-    const maxVal = Math.max(...example.map(d=>d.value)) * 1.1;
-    const grid = 4;
-
-    // Grid
-    ctx.strokeStyle = '#e9eef2'; ctx.lineWidth = 1;
-    for(let i=0;i<=grid;i++){
-      const y = P.top + (H/grid)*i;
-      ctx.beginPath(); ctx.moveTo(P.left, y); ctx.lineTo(cssW-P.right, y); ctx.stroke();
-      const v = Math.round(maxVal * (1 - i/grid));
-      ctx.fillStyle = '#667085'; ctx.font = '12px system-ui, -apple-system, Segoe UI, Roboto';
-      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
-      ctx.fillText(v.toLocaleString('de-CH'), P.left-6, y);
-    }
-
-    // Bars
-    const n = example.length, gap = 10;
-    const barW = Math.max(8, (W - (n-1)*gap)/n);
-    example.forEach((d,i)=>{
-      const x = P.left + i*(barW+gap);
-      const h = (d.value/maxVal)*H;
-      const y = P.top + (H - h);
-      // shadow
-      ctx.fillStyle = 'rgba(226,60,47,.18)'; ctx.fillRect(x, y+2, barW, h);
-      // bar
-      ctx.fillStyle = '#e23c2f'; ctx.fillRect(x, y, barW, h);
-      // label
-      ctx.fillStyle = '#667085'; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-      ctx.fillText(d.label, x + barW/2, cssH - 8);
+function loadData() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return structuredClone(demoData);
+    const data = JSON.parse(raw);
+    // Basic sanity check
+    ['wallace','patricia'].forEach(k=>{
+      data[k] ??= {income:[], expenses:[]};
+      data[k].income ??= [];
+      data[k].expenses ??= [];
     });
+    return data;
+  } catch {
+    return structuredClone(demoData);
   }
+}
+function saveData() {
+  localStorage.setItem(LS_KEY, JSON.stringify(state));
+  renderAll(); // nach jedem Save alles aktualisieren
+}
 
-  draw(); window.addEventListener('resize', draw, {passive:true});
-})();
+let state = loadData();
 
-// ---- Initial render
-renderHome();
-renderSummaries();
-fillMehrForm();
+// ---------- Hilfen ----------
+const CHF = n => 'CHF ' + Number(n || 0).toLocaleString('de-CH', {minimumFractionDigits:2, maximumFractionDigits:2});
+const sum = arr => arr.reduce((a,b)=>a + (Number(b.amount)||0), 0);
+const personTotals = person => {
+  const income = sum(person.income);
+  const expenses = sum(person.expenses);
+  return { income, expenses, balance: income - expenses };
+};
+
+// ---------- Rendering: Übersicht & Tabs ----------
+function renderHome() {
+  const w = personTotals(state.wallace);
+  const p = personTotals(state.patricia);
+  const g = { income: w.income + p.income, expenses: w.expenses + p.expenses };
+  g.balance = g.income - g.expenses;
+
+  setText('home-w-income', CHF(w.income));
+  setText('home-w-expense', CHF(w.expenses));
+  setText('home-w-balance', CHF(w.balance), w.balance >= 0);
+
+  setText('home-p-income', CHF(p.income));
+  setText('home-p-expense', CHF(p.expenses));
+  setText('home-p-balance', CHF(p.balance), p.balance >= 0);
+
+  setText('home-g-income', CHF(g.income));
+  setText('home-g-expense', CHF(g.expenses));
+  setText('home-g-balance', CHF(g.balance), g.balance >= 0);
+}
+
+function renderPersonCards() {
+  const w = personTotals(state.wallace);
+  setText('w-income', CHF(w.income));
+  setText('w-expense', CHF(w.expenses));
+  setText('w-balance', CHF(w.balance), w.balance >= 0);
+
+  const p = personTotals(state.patricia);
+  setText('p-income', CHF(p.income));
+  setText('p-expense', CHF(p.expenses));
+  setText('p-balance', CHF(p.balance), p.balance >= 0);
+
+  const gInc = w.income + p.income;
+  const gExp = w.expenses + p.expenses;
+  const gBal = gInc - gExp;
+
+  setText('g-income', CHF(gInc));
+  setText('g-expense', CHF(gExp));
+  setText('g-balance', CHF(gBal), gBal >= 0);
+}
+
+function setText(id, txt, positive=true) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = txt;
+  el.classList.remove('positive','negative');
+  el.classList.add(positive ? 'positive':'negative');
+}
+
+// ---------- Einstellungen (Editor) ----------
+function renderEditorList(containerId, items, onChange) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  items.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'item';
+    div.innerHTML = `
+      <input class="input" type="text" placeholder="Bezeichnung" value="${item.label ?? ''}">
+      <input class="amount" type="number" inputmode="decimal" step="0.01" placeholder="Betrag (CHF)" value="${item.amount ?? ''}">
+      <button class="del" title="Entfernen">✕</button>
+    `;
+    const [labelEl, amountEl, delBtn] = div.children;
+
+    labelEl.addEventListener('input', () => {
+      items[idx].label = labelEl.value.trim();
+      saveData();
+    });
+    amountEl.addEventListener('input', () => {
+      items[idx].amount = parseFloat(amountEl.value.replace(',', '.')) || 0;
+      saveData();
+    });
+    delBtn.addEventListener('click', () => {
+      items.splice(idx, 1);
+      saveData();
+      onChange(); // neu rendern
+    });
+
+    container.appendChild(div);
+  });
+}
+
+function renderSettings() {
+  renderEditorList('w-income-list', state.wallace.income, renderSettings);
+  renderEditorList('w-expense-list', state.wallace.expenses, renderSettings);
+  renderEditorList('p-income-list', state.patricia.income, renderSettings);
+  renderEditorList('p-expense-list', state.patricia.expenses, renderSettings);
+}
+
+function addItem(where) {
+  if (where === 'w-income')  state.wallace.income.push({label:'', amount:0});
+  if (where === 'w-expense') state.wallace.expenses.push({label:'', amount:0});
+  if (where === 'p-income')  state.patricia.income.push({label:'', amount:0});
+  if (where === 'p-expense') state.patricia.expenses.push({label:'', amount:0});
+  saveData();
+  renderSettings();
+}
+
+// ---------- Export / Import / Reset ----------
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'fainance-export.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+function importJSON(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      state = data;
+      saveData();
+      renderSettings();
+    } catch { alert('Datei ungültig.'); }
+  };
+  reader.readAsText(file);
+}
+function resetDemo() {
+  if (!confirm('Beispieldaten laden und aktuelle Werte überschreiben?')) return;
+  state = structuredClone(demoData);
+  saveData();
+  renderSettings();
+}
+
+// ---------- Navigation ----------
+const tabButtons = document.querySelectorAll('.bottom-nav .chip');
+const tabs = {
+  home: document.getElementById('tab-home'),
+  wallace: document.getElementById('tab-wallace'),
+  patricia: document.getElementById('tab-patricia'),
+  gemeinsam: document.getElementById('tab-gemeinsam'),
+  settings: document.getElementById('tab-settings'),
+};
+function showTab(name) {
+  Object.values(tabs).forEach(t => t.classList.remove('active'));
+  tabs[name]?.classList.add('active');
+  tabButtons.forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  renderAll();
+}
+tabButtons.forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
+
+// ---------- Init ----------
+function renderAll() {
+  renderHome();
+  renderPersonCards();
+  if (tabs.settings.classList.contains('active')) renderSettings();
+}
+
+function initActions() {
+  // Add-Buttons
+  document.querySelectorAll('[data-add]').forEach(btn => {
+    btn.addEventListener('click', () => addItem(btn.dataset.add));
+  });
+  // Export/Import/Reset
+  document.getElementById('export-json').addEventListener('click', exportJSON);
+  document.getElementById('import-json').addEventListener('change', e => {
+    if (e.target.files && e.target.files[0]) importJSON(e.target.files[0]);
+    e.target.value = '';
+  });
+  document.getElementById('reset-demo').addEventListener('click', resetDemo);
+}
+
+initActions();
+renderAll();
