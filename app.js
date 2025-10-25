@@ -3,9 +3,7 @@ const LS_KEY = 'fainance:data';
 
 const demoData = {
   wallace: {
-    income: [
-      { label: 'Lohn', amount: 5550 },
-    ],
+    income: [{ label: 'Lohn', amount: 5550 }],
     expenses: [
       { label: 'Miete', amount: 1650 },
       { label: 'Versicherungen', amount: 310 },
@@ -31,9 +29,8 @@ function loadData() {
     const raw = localStorage.getItem(LS_KEY);
     if (!raw) return structuredClone(demoData);
     const data = JSON.parse(raw);
-    // Basic sanity check
-    ['wallace','patricia'].forEach(k=>{
-      data[k] ??= {income:[], expenses:[]};
+    ['wallace', 'patricia'].forEach(k => {
+      data[k] ??= { income: [], expenses: [] };
       data[k].income ??= [];
       data[k].expenses ??= [];
     });
@@ -44,19 +41,34 @@ function loadData() {
 }
 function saveData() {
   localStorage.setItem(LS_KEY, JSON.stringify(state));
-  renderAll(); // nach jedem Save alles aktualisieren
+  renderAll();
 }
 
 let state = loadData();
 
-// ---------- Hilfen ----------
-const CHF = n => 'CHF ' + Number(n || 0).toLocaleString('de-CH', {minimumFractionDigits:2, maximumFractionDigits:2});
-const sum = arr => arr.reduce((a,b)=>a + (Number(b.amount)||0), 0);
+// ---------- Helpers ----------
+const CHF = n =>
+  'CHF ' +
+  Number(n || 0).toLocaleString('de-CH', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+const sum = arr => arr.reduce((a, b) => a + (Number(b.amount) || 0), 0);
+
 const personTotals = person => {
   const income = sum(person.income);
   const expenses = sum(person.expenses);
   return { income, expenses, balance: income - expenses };
 };
+
+function setText(id, txt, positive = true) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = txt;
+  el.classList.remove('positive', 'negative');
+  el.classList.add(positive ? 'positive' : 'negative');
+}
 
 // ---------- Rendering: Übersicht & Tabs ----------
 function renderHome() {
@@ -98,14 +110,6 @@ function renderPersonCards() {
   setText('g-balance', CHF(gBal), gBal >= 0);
 }
 
-function setText(id, txt, positive=true) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent = txt;
-  el.classList.remove('positive','negative');
-  el.classList.add(positive ? 'positive':'negative');
-}
-
 // ---------- Einstellungen (Editor) ----------
 function renderEditorList(containerId, items, onChange) {
   const container = document.getElementById(containerId);
@@ -120,18 +124,33 @@ function renderEditorList(containerId, items, onChange) {
     `;
     const [labelEl, amountEl, delBtn] = div.children;
 
+    // Während des Tippens NUR in-memory aktualisieren – kein saveData()
     labelEl.addEventListener('input', () => {
-      items[idx].label = labelEl.value.trim();
-      saveData();
+      items[idx].label = labelEl.value;
     });
     amountEl.addEventListener('input', () => {
-      items[idx].amount = parseFloat(amountEl.value.replace(',', '.')) || 0;
-      saveData();
+      // Erlaube Eingaben wie "10000" ohne sofortiges Speichern
+      const v = amountEl.value.replace(',', '.');
+      items[idx].amount = v === '' ? '' : parseFloat(v) || 0;
     });
+
+    // Speichern erst bei Blur oder Enter
+    const commit = () => {
+      // Leere Beträge -> 0 speichern
+      if (items[idx].amount === '') items[idx].amount = 0;
+      saveData();
+      // neu rendern, damit formatierte Zahlen erscheinen
+      onChange();
+    };
+    labelEl.addEventListener('blur', commit);
+    amountEl.addEventListener('blur', commit);
+    labelEl.addEventListener('keydown', e => { if (e.key === 'Enter') labelEl.blur(); });
+    amountEl.addEventListener('keydown', e => { if (e.key === 'Enter') amountEl.blur(); });
+
     delBtn.addEventListener('click', () => {
       items.splice(idx, 1);
       saveData();
-      onChange(); // neu rendern
+      onChange();
     });
 
     container.appendChild(div);
@@ -146,20 +165,22 @@ function renderSettings() {
 }
 
 function addItem(where) {
-  if (where === 'w-income')  state.wallace.income.push({label:'', amount:0});
-  if (where === 'w-expense') state.wallace.expenses.push({label:'', amount:0});
-  if (where === 'p-income')  state.patricia.income.push({label:'', amount:0});
-  if (where === 'p-expense') state.patricia.expenses.push({label:'', amount:0});
+  if (where === 'w-income') state.wallace.income.push({ label: '', amount: 0 });
+  if (where === 'w-expense') state.wallace.expenses.push({ label: '', amount: 0 });
+  if (where === 'p-income') state.patricia.income.push({ label: '', amount: 0 });
+  if (where === 'p-expense') state.patricia.expenses.push({ label: '', amount: 0 });
   saveData();
   renderSettings();
 }
 
 // ---------- Export / Import / Reset ----------
 function exportJSON() {
-  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = 'fainance-export.json'; a.click();
+  a.href = url;
+  a.download = 'fainance-export.json';
+  a.click();
   URL.revokeObjectURL(url);
 }
 function importJSON(file) {
@@ -170,7 +191,9 @@ function importJSON(file) {
       state = data;
       saveData();
       renderSettings();
-    } catch { alert('Datei ungültig.'); }
+    } catch {
+      alert('Datei ungültig.');
+    }
   };
   reader.readAsText(file);
 }
@@ -206,11 +229,9 @@ function renderAll() {
 }
 
 function initActions() {
-  // Add-Buttons
   document.querySelectorAll('[data-add]').forEach(btn => {
     btn.addEventListener('click', () => addItem(btn.dataset.add));
   });
-  // Export/Import/Reset
   document.getElementById('export-json').addEventListener('click', exportJSON);
   document.getElementById('import-json').addEventListener('change', e => {
     if (e.target.files && e.target.files[0]) importJSON(e.target.files[0]);
