@@ -3,71 +3,62 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>BudgetAI</title>
+  <title>FAINANCE</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="logo-fainance.png" />
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">Budget<span class="ai">AI</span></div>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="brand">
+      <img src="logo-fainance.png" alt="FAINANCE" class="brand-logo" />
+      <span class="brand-name">FAINANCE<sup>®</sup></span>
+    </div>
+    <div id="userBox" class="user-box" hidden></div>
   </header>
 
-  <main id="views">
+  <!-- Views -->
+  <main class="app-main">
     <!-- HOME -->
-    <section id="view-home" class="view active" aria-label="Übersicht">
+    <section id="view-home" class="view is-active" aria-labelledby="tab-home" role="region">
       <h1>Übersicht</h1>
-      <div id="home-cards" class="cards"></div>
-      <div class="chart-placeholder">
-        Hier bauen wir später Balken-Charts rein.
-      </div>
+      <div class="card">Home-Inhalte …</div>
     </section>
 
     <!-- WALLACE -->
-    <section id="view-wallace" class="view" aria-label="Wallace">
+    <section id="view-wallace" class="view" aria-labelledby="tab-wallace" role="region">
       <h1>Wallace</h1>
-      <div id="wallace-cards" class="cards"></div>
+      <div class="card">Wallace-Inhalte …</div>
     </section>
 
     <!-- PATRICIA -->
-    <section id="view-patricia" class="view" aria-label="Patricia">
+    <section id="view-patricia" class="view" aria-labelledby="tab-patricia" role="region">
       <h1>Patricia</h1>
-      <div id="patricia-cards" class="cards"></div>
+      <div class="card">Patricia-Inhalte …</div>
     </section>
 
     <!-- GEMEINSAM -->
-    <section id="view-gemeinsam" class="view" aria-label="Gemeinsam">
+    <section id="view-shared" class="view" aria-labelledby="tab-shared" role="region">
       <h1>Gemeinsam</h1>
-      <div id="gemeinsam-cards" class="cards"></div>
+      <div class="card">Gemeinsame Inhalte …</div>
     </section>
 
     <!-- MEHR -->
-    <section id="view-mehr" class="view" aria-label="Mehr">
+    <section id="view-more" class="view" aria-labelledby="tab-more" role="region">
       <h1>Mehr</h1>
-      <div class="cards">
-        <div class="card">
-          <div class="row">
-            <span>Einstellungen</span>
-            <span>›</span>
-          </div>
-        </div>
-        <div class="card">
-          <div class="row">
-            <span>Über</span>
-            <span>BudgetAI</span>
-          </div>
-        </div>
-      </div>
+      <div class="card">Einstellungen / Login / Export …</div>
     </section>
   </main>
 
-  <!-- Bottom Tabs -->
-  <nav class="tabs" role="tablist" aria-label="Hauptnavigation">
-    <button class="tab active" data-target="home" role="tab" aria-selected="true">Home</button>
-    <button class="tab" data-target="wallace" role="tab" aria-selected="false">Wallace</button>
-    <button class="tab" data-target="patricia" role="tab" aria-selected="false">Patricia</button>
-    <button class="tab" data-target="gemeinsam" role="tab" aria-selected="false">Gemeinsam</button>
-    <button class="tab" data-target="mehr" role="tab" aria-selected="false">Mehr</button>
+  <!-- Bottom Nav -->
+  <nav class="tabbar" role="tablist" aria-label="Navigation">
+    <button id="tab-home"     class="tab is-active" data-target="view-home"     role="tab" aria-controls="view-home"     aria-selected="true">Home</button>
+    <button id="tab-wallace"  class="tab"          data-target="view-wallace"  role="tab" aria-controls="view-wallace"  aria-selected="false">Wallace</button>
+    <button id="tab-patricia" class="tab"          data-target="view-patricia" role="tab" aria-controls="view-patricia" aria-selected="false">Patricia</button>
+    <button id="tab-shared"   class="tab"          data-target="view-shared"   role="tab" aria-controls="view-shared"   aria-selected="false">Gemeinsam</button>
+    <button id="tab-more"     class="tab"          data-target="view-more"     role="tab" aria-controls="view-more"     aria-selected="false">Mehr</button>
   </nav>
 
-  <script src="app.js" defer></script>
+  <script defer src="app.js"></script>
 </body>
 </html>
