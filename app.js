@@ -1,143 +1,142 @@
-// ==== Daten + Utils ====
-const DEFAULTS = {
-  currency: "CHF",
-  wallace: {
-    income: [{label:"Lohn",amount:5200},{label:"Nebenjob",amount:350}],
-    expenses:[{label:"Miete",amount:1500},{label:"Versicherungen",amount:220},{label:"ÖV/Auto",amount:120},{label:"Lebensmittel",amount:520}]
-  },
-  patricia: {
-    income: [{label:"Lohn",amount:4800},{label:"Salon-Bonus",amount:400}],
-    expenses:[{label:"Miete",amount:1400},{label:"Versicherungen",amount:210},{label:"Lebensmittel",amount:500},{label:"ÖV/Auto",amount:110}]
-  }
+// ------- Firebase laden (v9 modular via CDN) -------
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword,
+  createUserWithEmailAndPassword, signOut
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, onSnapshot
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+// ------- Deine Firebase Konfiguration -------
+const firebaseConfig = {
+  apiKey: "AIzaSyDr9Rpwmyb6CabzD602uq43rf84sJO3Xu8",
+  authDomain: "budgetai-77842.firebaseapp.com",
+  projectId: "budgetai-77842",
+  storageBucket: "budgetai-77842.firebasestorage.app",
+  messagingSenderId: "702742240654",
+  appId: "1:702742240654:web:93be69888bfbdf24e498df",
+  measurementId: "G-PTMSZGRYW4"
 };
-const KEY = "pw_finance_lite_settings";
-const load = () => JSON.parse(localStorage.getItem(KEY) || JSON.stringify(DEFAULTS));
-const save = (cfg) => localStorage.setItem(KEY, JSON.stringify(cfg));
-const chf = n => (Number(n)||0).toLocaleString("de-CH",{minimumFractionDigits:2,maximumFractionDigits:2})+" CHF";
-const sum = list => list.reduce((a,b)=>a+(Number(b.amount)||0),0);
-const totals = b => ({inc:sum(b.income), exp:sum(b.expenses), bal:sum(b.income)-sum(b.expenses)});
 
-// ==== Render ====
-function renderOverview(cfg){
-  const w = totals(cfg.wallace), p = totals(cfg.patricia);
-  const g = {inc:w.inc+p.inc, exp:w.exp+p.exp, bal:(w.inc+p.inc)-(w.exp+p.exp)};
-  return `
-  <h1>Übersicht</h1>
-  <div class="grid-3">
-    <div class="card">
-      <div class="row"><span><b>Wallace</b> – Einnahmen</span><b>${chf(w.inc)}</b></div>
-      <div class="row"><span>Ausgaben</span><b>${chf(w.exp)}</b></div>
-      <div class="row total ${w.bal>=0?"pos":"neg"}"><span>Bilanz</span><b>${chf(w.bal)}</b></div>
-    </div>
-    <div class="card">
-      <div class="row"><span><b>Patricia</b> – Einnahmen</span><b>${chf(p.inc)}</b></div>
-      <div class="row"><span>Ausgaben</span><b>${chf(p.exp)}</b></div>
-      <div class="row total ${p.bal>=0?"pos":"neg"}"><span>Bilanz</span><b>${chf(p.bal)}</b></div>
-    </div>
-    <div class="card">
-      <div class="row"><span><b>Gemeinsam</b> – Einnahmen</span><b>${chf(g.inc)}</b></div>
-      <div class="row"><span>Ausgaben</span><b>${chf(g.exp)}</b></div>
-      <div class="row total ${g.bal>=0?"pos":"neg"}"><span>Bilanz</span><b>${chf(g.bal)}</b></div>
-    </div>
-  </div>`;
+// ------- Init -------
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ------- DOM helpers -------
+const $ = (sel) => document.querySelector(sel);
+const formatCHF = v => Number(v||0).toLocaleString("de-CH", {style:"currency", currency:"CHF"});
+
+// Sections
+const authSection = $("#authSection");
+const appSection  = $("#appSection");
+const userBadge   = $("#userBadge");
+const userEmailEl = $("#userEmail");
+const authMsg     = $("#authMsg");
+
+// Auth buttons
+$("#signInBtn")?.addEventListener("click", async () => {
+  authMsg.textContent = "";
+  const email = $("#email").value.trim();
+  const pass  = $("#password").value;
+  try {
+    await signInWithEmailAndPassword(auth, email, pass);
+  } catch (e) {
+    authMsg.textContent = "Login fehlgeschlagen: " + (e?.message || e);
+  }
+});
+
+$("#signUpBtn")?.addEventListener("click", async () => {
+  authMsg.textContent = "";
+  const email = $("#email").value.trim();
+  const pass  = $("#password").value;
+  try {
+    await createUserWithEmailAndPassword(auth, email, pass);
+    // Erstinitialisierung der Daten für neue Accounts
+    await initProfileDocs(auth.currentUser.uid);
+  } catch (e) {
+    authMsg.textContent = "Registrierung fehlgeschlagen: " + (e?.message || e);
+  }
+});
+
+$("#signOutBtn")?.addEventListener("click", () => signOut(auth));
+
+// ------- Firestore Doku-Pfade -------
+// Wir speichern pro Nutzer unter users/{uid}/profiles/{wallace|patricia|shared}
+const profileRef = (uid, who) => doc(db, "users", uid, "profiles", who);
+
+// Wenn neuer Account: Grundwerte anlegen
+async function initProfileDocs(uid){
+  const defaults = [
+    ["wallace",  {income: 5550, expense: 2360}],
+    ["patricia", {income: 5200, expense: 2220}],
+    ["shared",   {income: 10750, expense: 4580}]
+  ];
+  await Promise.all(defaults.map(([id,data]) =>
+    setDoc(profileRef(uid,id), data, {merge:true})
+  ));
 }
 
-function renderPerson(name, data){
-  const rows = list => list.map(r=>`<tr><td>${r.label||"—"}</td><td class="num">${(Number(r.amount)||0).toFixed(2)}</td></tr>`).join("");
-  return `
-  <h1>${name}</h1>
-  <div class="two-col">
-    <div class="card">
-      <table>
-        <thead><tr><th>Einnahmen</th><th class="num">Betrag (CHF)</th></tr></thead>
-        <tbody>${rows(data.income)}</tbody>
-      </table>
-    </div>
-    <div class="card">
-      <table>
-        <thead><tr><th>Ausgaben</th><th class="num">Betrag (CHF)</th></tr></thead>
-        <tbody>${rows(data.expenses)}</tbody>
-      </table>
-    </div>
-  </div>`;
-}
+// ------- Live-Bindings (Overview) -------
+let unsubscribers = [];
+function bindOverview(uid){
+  // Cleanup vorherige Listener
+  unsubscribers.forEach(u => u && u());
+  unsubscribers = [];
 
-function renderSettings(cfg){
-  const row = (p,lbl,amt)=>`
-    <div class="form-row">
-      <input type="text"  name="${p}_label"  value="${lbl||""}" placeholder="Bezeichnung">
-      <input type="number" step="0.01" name="${p}_amount" value="${amt!==""?(Number(amt)||0).toFixed(2):""}" placeholder="Betrag (CHF)">
-    </div>`;
-  const block = (prefix, arr)=>[...arr.map(r=>row(prefix,r.label,r.amount)), row(prefix,"",""), row(prefix,"","")].join("");
-  return `
-  <h1>Einstellungen</h1>
-  <div class="flash"><div class="msg" id="saveMsg" style="display:none">Gespeichert.</div></div>
-  <form class="card form" id="settingsForm">
-    <h3>Wallace</h3>
-    <div class="flex">
-      <div><h4>Einnahmen</h4><div class="rows" id="rows_w_income">${block("w_income", cfg.wallace.income)}</div></div>
-      <div><h4>Ausgaben</h4><div class="rows" id="rows_w_expenses">${block("w_expenses", cfg.wallace.expenses)}</div></div>
-    </div>
-    <h3>Patricia</h3>
-    <div class="flex">
-      <div><h4>Einnahmen</h4><div class="rows" id="rows_p_income">${block("p_income", cfg.patricia.income)}</div></div>
-      <div><h4>Ausgaben</h4><div class="rows" id="rows_p_expenses">${block("p_expenses", cfg.patricia.expenses)}</div></div>
-    </div>
-    <div class="actions"><button type="submit">Speichern</button></div>
-  </form>`;
-}
+  const bind = (who, ids) => {
+    const unsub = onSnapshot(profileRef(uid, who), snap => {
+      const data = snap.data() || {income:0, expense:0};
+      $(ids.income).textContent = formatCHF(data.income);
+      $(ids.expense).textContent = formatCHF(data.expense);
+      const bal = (Number(data.income||0) - Number(data.expense||0));
+      const el = $(ids.balance);
+      el.textContent = formatCHF(bal);
+      el.classList.toggle("pos", bal >= 0);
+      el.classList.toggle("neg", bal < 0);
 
-function collectRows(container){
-  const labels  = [...container.querySelectorAll('input[name$="_label"]')].map(i=>i.value.trim());
-  const amounts = [...container.querySelectorAll('input[name$="_amount"]')].map(i=>Number((i.value||"").replace(",", "."))||0);
-  const out=[]; for(let i=0;i<labels.length;i++){ if(!labels[i] && !amounts[i]) continue; out.push({label:labels[i]||"—", amount:amounts[i]}); }
-  return out;
-}
-
-// ==== App Mount + Tabs ====
-function mount(){
-  let cfg = load();
-
-  const renderAll = ()=>{
-    document.querySelector("#view-overview").innerHTML = renderOverview(cfg);
-    document.querySelector("#view-wallace").innerHTML = renderPerson("Wallace", cfg.wallace);
-    document.querySelector("#view-patricia").innerHTML = renderPerson("Patricia", cfg.patricia);
-    document.querySelector("#view-gemeinsam").innerHTML = renderPerson("Gemeinsam", {
-      income:[...cfg.wallace.income, ...cfg.patricia.income],
-      expenses:[...cfg.wallace.expenses, ...cfg.patricia.expenses]
+      // Editfelder vorbelegen
+      $(ids.inpIncome).value  = data.income ?? 0;
+      $(ids.inpExpense).value = data.expense ?? 0;
     });
-    document.querySelector("#view-einstellungen").innerHTML = renderSettings(cfg);
+    unsubscribers.push(unsub);
 
-    // Save-Handler neu binden
-    const form = document.querySelector("#settingsForm");
-    form.addEventListener("submit",(e)=>{
-      e.preventDefault();
-      const next = {
-        currency:"CHF",
-        wallace:{
-          income:  collectRows(document.getElementById("rows_w_income")),
-          expenses:collectRows(document.getElementById("rows_w_expenses"))
-        },
-        patricia:{
-          income:  collectRows(document.getElementById("rows_p_income")),
-          expenses:collectRows(document.getElementById("rows_p_expenses"))
-        }
-      };
-      save(next); cfg = next; renderAll();
-      const msg = document.getElementById("saveMsg"); if(msg){ msg.style.display="block"; setTimeout(()=>msg.style.display="none",1200); }
-    }, {once:true});
+    // Save Buttons
+    $(ids.saveBtn).onclick = async () => {
+      const income  = Number($(ids.inpIncome).value || 0);
+      const expense = Number($(ids.inpExpense).value || 0);
+      await setDoc(profileRef(uid, who), {income, expense}, {merge:true});
+    };
   };
 
-  renderAll();
+  bind("wallace",  { income:"#w-income", expense:"#w-expense", balance:"#w-balance",
+                     inpIncome:"#wIncomeInput", inpExpense:"#wExpenseInput", saveBtn:"#wSaveBtn" });
 
-  const buttons = document.querySelectorAll(".tabs button");
-  const show = route=>{
-    buttons.forEach(b=>b.classList.toggle("active", b.dataset.route===route));
-    document.querySelectorAll(".view").forEach(v=>v.hidden=true);
-    document.querySelector("#view-"+route).hidden=false;
-    window.scrollTo({top:0, behavior:"instant"});
-  };
-  buttons.forEach(b=>b.addEventListener("click", ()=>show(b.dataset.route)));
-  show("overview");
+  bind("patricia", { income:"#p-income", expense:"#p-expense", balance:"#p-balance",
+                     inpIncome:"#pIncomeInput", inpExpense:"#pExpenseInput", saveBtn:"#pSaveBtn" });
+
+  bind("shared",   { income:"#s-income", expense:"#s-expense", balance:"#s-balance",
+                     inpIncome:"#sIncomeInput", inpExpense:"#sExpenseInput", saveBtn:"#sSaveBtn" });
 }
-document.addEventListener("DOMContentLoaded", mount);
+
+// ------- Auth State Handling -------
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    // UI umschalten
+    userEmailEl.textContent = user.email || "";
+    userBadge.classList.remove("hidden");
+    authSection.classList.add("hidden");
+    appSection.classList.remove("hidden");
+
+    // Daten initialisieren falls leer
+    await initProfileDocs(user.uid);
+    // Live-Übersicht binden
+    bindOverview(user.uid);
+  } else {
+    unsubscribers.forEach(u => u && u());
+    userBadge.classList.add("hidden");
+    appSection.classList.add("hidden");
+    authSection.classList.remove("hidden");
+  }
+});
