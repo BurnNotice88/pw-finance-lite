@@ -1,152 +1,186 @@
-// ---------- Utilities ----------
-const CHF = n => {
-  const v = Number(n || 0);
-  return v.toLocaleString("de-CH", { style:"currency", currency:"CHF", maximumFractionDigits:2 });
-};
-const sum = arr => (arr || []).reduce((a, x) => a + (Number(x.value)||0), 0);
+// app.js (M1 – Shell, Auto-Login, Tabs, Monat-Dropdown, Sync-Anzeige)
+const $ = (sel) => document.querySelector(sel);
+const $$ = (sel) => Array.from(document.querySelectorAll(sel));
 
-// ---------- Data (localStorage) ----------
-const LS_KEY = "fainance-data-v1";
-const DEFAULT_DATA = {
-  wallace: {
-    income:  [{ name:"Lohn", value: 5550 }, { name:"Nebenjob", value: 0 }],
-    expense: [{ name:"Miete", value: 1350 }, { name:"Versicherungen", value: 1000 }],
-  },
-  patricia: {
-    income:  [{ name:"Lohn", value: 5200 }, { name:"Salon-Bonus", value: 400 }],
-    expense: [{ name:"Miete", value: 1400 }, { name:"Versicherungen", value: 210 }],
-  },
-  joint: {
-    income:  [{ name:"Nebeneinkünfte", value: 500 }],
-    expense: [{ name:"Haushalt", value: 500 }],
-  }
+// --- Basic UI refs
+const loginScreen = $('#login-screen');
+const appScreen   = $('#app-screen');
+const syncBadge   = $('#sync-indicator');
+const whoami      = $('#whoami');
+const monthSelect = $('#monthSelect');
+
+// Tabs
+const tabs = $$('.tab');
+const views = {
+  dashboard: $('#view-dashboard'),
+  wallace:   $('#view-wallace'),
+  patricia:  $('#view-patricia'),
+  shared:    $('#view-shared'),
+  settings:  $('#view-settings'),
 };
 
-let data = load();
-function load(){
-  try{
-    const raw = localStorage.getItem(LS_KEY);
-    return raw ? JSON.parse(raw) : structuredClone(DEFAULT_DATA);
-  }catch(_){
-    return structuredClone(DEFAULT_DATA);
+// Simple CHF formatter (de-CH)
+const fmtCHF = (n=0) =>
+  new Intl.NumberFormat('de-CH', { style:'currency', currency:'CHF', minimumFractionDigits:2 }).format(n);
+
+// Network status
+function updateOnlineStatus(){
+  if (navigator.onLine) {
+    syncBadge.textContent = 'Online';
+    syncBadge.style.background = '#16A34A';
+  } else {
+    syncBadge.textContent = 'Offline';
+    syncBadge.style.background = '#6B7280';
   }
 }
-function save(){
-  localStorage.setItem(LS_KEY, JSON.stringify(data));
-  renderAll();
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+
+// Month dropdown (current ± 18 Monate)
+function yyyymm(d){
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  return `${y}-${m}`;
+}
+function monthLabel(ym){
+  const [y,m] = ym.split('-').map(Number);
+  const d = new Date(y, m-1, 1);
+  return d.toLocaleDateString('de-CH', { month:'long', year:'numeric' });
+}
+function buildMonthOptions(){
+  monthSelect.innerHTML = '';
+  const now = new Date();
+  const options = [];
+  for (let delta = -12; delta <= 12; delta++){
+    const d = new Date(now.getFullYear(), now.getMonth()+delta, 1);
+    const key = yyyymm(d);
+    const opt = document.createElement('option');
+    opt.value = key;
+    opt.textContent = monthLabel(key);
+    options.push(opt);
+  }
+  options.forEach(o => monthSelect.appendChild(o));
+  // select current month
+  const cur = yyyymm(new Date());
+  monthSelect.value = cur;
+}
+buildMonthOptions();
+
+// Tab navigation
+function showView(key){
+  Object.values(views).forEach(v => v.classList.remove('active'));
+  Object.keys(views).forEach(k => {
+    if (k === key) views[k].classList.add('active');
+  });
+  tabs.forEach(t => t.classList.toggle('active', t.dataset.target === key));
+}
+tabs.forEach(btn => btn.addEventListener('click', () => {
+  showView(btn.dataset.target);
+}));
+
+// Dummy dashboard numbers for M1 (placeholder only)
+function setPlaceholderNumbers(){
+  // All zeros in M1; real values in M2
+  $('#sum-income').textContent = fmtCHF(0);
+  $('#sum-expense').textContent = fmtCHF(0);
+  $('#sum-balance').textContent = fmtCHF(0);
+
+  $('#w-income').textContent = fmtCHF(0);
+  $('#w-expense').textContent = fmtCHF(0);
+  $('#w-balance').textContent = fmtCHF(0);
+
+  $('#p-income').textContent = fmtCHF(0);
+  $('#p-expense').textContent = fmtCHF(0);
+  $('#p-balance').textContent = fmtCHF(0);
+
+  $('#s-income').textContent = fmtCHF(0);
+  $('#s-expense').textContent = fmtCHF(0);
+  $('#s-balance').textContent = fmtCHF(0);
+
+  $('#debt-w').textContent = 'CHF 0.00 | 0/Mt';
+  $('#debt-p').textContent = 'CHF 0.00 | 0/Mt';
+  $('#debt-s').textContent = 'CHF 0.00 | 0/Mt';
+  $('#debt-total').textContent = 'CHF 0.00';
+}
+setPlaceholderNumbers();
+
+// Auth wiring (from index.html bootstrap)
+const fb = window.__firebase || null;
+
+// Login flow (first time only)
+function attachLoginHandlers(){
+  const btnLogin = $('#btn-login');
+  const email    = $('#email');
+  const password = $('#password');
+  const errEl    = $('#login-error');
+
+  if (!btnLogin) return;
+
+  btnLogin.addEventListener('click', async () => {
+    errEl.classList.add('hidden');
+    errEl.textContent = '';
+    try {
+      if (!fb) throw new Error('Firebase nicht geladen.');
+      await fb.signInWithEmailAndPassword(fb.auth, email.value.trim(), password.value);
+      // success → onAuthStateChanged übernimmt das Umschalten
+    } catch (e) {
+      errEl.textContent = e?.message || 'Login fehlgeschlagen';
+      errEl.classList.remove('hidden');
+    }
+  });
 }
 
-// ---------- Navigation ----------
-const views = document.querySelectorAll(".view");
-const tabs = document.querySelectorAll(".tabbar .tab");
-tabs.forEach(btn=>{
-  btn.addEventListener("click", ()=>{
-    tabs.forEach(x=>x.classList.remove("active"));
-    btn.classList.add("active");
-    const id = btn.dataset.target;
-    views.forEach(v=>v.classList.toggle("active", v.id===id));
-  });
+// Logout
+$('#btn-logout')?.addEventListener('click', async () => {
+  try {
+    if (!fb) return;
+    await fb.signOut(fb.auth);
+  } catch {}
 });
 
-// ---------- Rendering ----------
-function renderSummary(){
-  const wI = sum(data.wallace.income),  wE = sum(data.wallace.expense);
-  const pI = sum(data.patricia.income), pE = sum(data.patricia.expense);
-  const jI = sum(data.joint.income),    jE = sum(data.joint.expense);
-
-  // Home
-  setText("sum-w-income", CHF(wI));
-  setText("sum-w-expense", CHF(wE));
-  setText("sum-w-balance", CHF(wI-wE));
-  setText("sum-p-income", CHF(pI));
-  setText("sum-p-expense", CHF(pE));
-  setText("sum-p-balance", CHF(pI-pE));
-  setText("sum-j-income", CHF(jI));
-  setText("sum-j-expense", CHF(jE));
-  setText("sum-j-balance", CHF(jI-jE));
-
-  // Personenseiten
-  setText("w-income", CHF(wI));    setText("w-expense", CHF(wE));    setText("w-balance", CHF(wI-wE));
-  setText("p-income", CHF(pI));    setText("p-expense", CHF(pE));    setText("p-balance", CHF(pI-pE));
-  setText("j-income", CHF(jI));    setText("j-expense", CHF(jE));    setText("j-balance", CHF(jI-jE));
-}
-function setText(id, text){ const el = document.getElementById(id); if(el) el.textContent = text; }
-
-function loadFormValues(){
-  document.querySelectorAll("#form-settings [data-path]").forEach(input=>{
-    const val = getByPath(data, input.dataset.path);
-    input.value = isMoneyField(input) ? money(val) : (val?.toString() ?? "");
-  });
-}
-const isMoneyField = (el)=> /\.\w+value\]?$/.test(el.dataset.path);
-const money = v => (Number(v||0)).toString();
-
-function getByPath(obj, path){
-  // e.g. "wallace.income[0].value"
-  return path.split('.').reduce((acc, part)=>{
-    const m = part.match(/^(\w+)\[(\d+)\]$/);
-    if(m){ acc = acc?.[m[1]]?.[Number(m[2])]; }
-    else  { acc = acc?.[part]; }
-    return acc;
-  }, obj);
-}
-function setByPath(obj, path, value){
-  const parts = path.split('.');
-  let cur = obj;
-  for(let i=0;i<parts.length;i++){
-    const m = parts[i].match(/^(\w+)\[(\d+)\]$/);
-    if(i === parts.length-1){
-      if(m) cur[m[1]][Number(m[2])] = value;
-      else  cur[parts[i]] = value;
-    }else{
-      if(m){ cur = cur[m[1]][Number(m[2])]; }
-      else  { cur = cur[parts[i]]; }
-    }
+// Switch UI based on auth
+function setUIForUser(user){
+  if (user){
+    // App sichtbar
+    loginScreen.classList.add('hidden');
+    appScreen.classList.remove('hidden');
+    whoami.textContent = user.email || 'angemeldet';
+    syncBadge.textContent = 'Online';
+    syncBadge.style.background = '#16A34A';
+  } else {
+    // Login sichtbar
+    appScreen.classList.add('hidden');
+    loginScreen.classList.remove('hidden');
+    whoami.textContent = '–';
+    updateOnlineStatus();
   }
 }
 
-// ---------- Form logic (NO auto save) ----------
-const form = document.getElementById("form-settings");
-form.addEventListener("submit", (e)=>{
-  e.preventDefault();
-
-  // Build a draft copy from current inputs
-  const draft = structuredClone(data);
-  document.querySelectorAll("#form-settings [data-path]").forEach(input=>{
-    const raw = input.value.trim();
-    const path = input.dataset.path;
-    // Decide whether it's a name or a numeric value
-    if(isMoneyField(input)){
-      const n = Number(raw.replace(/[^0-9.,-]/g,"").replace(',','.'));
-      // find holding object and set its value, preserving name
-      const holder = getByPath(draft, path.replace(/\.value$/,''));
-      setByPath(draft, path.replace(/\.value$/,''), { ...holder, value: isFinite(n)? n : 0 });
-    }else{
-      const holder = getByPath(draft, path.replace(/\.name$/,''));
-      setByPath(draft, path.replace(/\.name$/,''), { ...holder, name: raw });
-    }
+// Wait for auth (provided in index.html)
+if (window.__authReady){
+  window.__authReady.then((user) => {
+    setUIForUser(user);
+    attachLoginHandlers();
   });
-
-  data = draft;
-  save();
-  alert("Gespeichert.");
-});
-
-// Reset (lädt aktuelle gespeicherte Werte erneut ins Formular)
-document.getElementById("btn-cancel").addEventListener("click", ()=>{
-  loadFormValues();
-});
-
-// Verhindere Autospeichern / Blur-Aktion -> nichts
-document.querySelectorAll("#form-settings input").forEach(inp=>{
-  inp.addEventListener("input", ()=>{/* live nichts speichern */});
-  inp.addEventListener("change", ()=>{/* nichts */});
-  inp.addEventListener("blur", ()=>{/* nichts */});
-});
-
-// ---------- Initial ----------
-function renderAll(){
-  renderSummary();
+  // also subscribe to changes
+  window.__onAuthChange = (user) => setUIForUser(user);
+} else {
+  // Fallback: no Firebase present (still let UI load)
+  loginScreen.classList.remove('hidden');
+  attachLoginHandlers();
 }
-renderAll();
-loadFormValues();
+
+// Month change (for M1 just placeholder)
+monthSelect.addEventListener('change', () => {
+  // In M2 wird die Auswahl die Daten-Queries steuern
+  // Hier nur eine kleine visuelle Bestätigung via badge
+  const nowKey = yyyymm(new Date());
+  const isFuture = monthSelect.value > nowKey;
+  const isPast   = monthSelect.value < nowKey;
+
+  // Badges (IST/Prognose) – einfache Demo in M1
+  $('#badge-w').textContent = isFuture ? 'Prognose' : 'IST';
+  $('#badge-p').textContent = isFuture ? 'Prognose' : 'IST';
+  $('#badge-s').textContent = isFuture ? 'Prognose' : 'IST';
+});
