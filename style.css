@@ -1,103 +1,154 @@
 :root{
-  --brand-red:#e53935;
-  --ink:#0f1720;
-  --ink-2:#374151;
-  --muted:#8a94a6;
-  --bg:#f6f7fb;
+  --bg:#f6f8fb;
   --card:#ffffff;
-  --shadow:0 6px 20px rgba(15,23,32,.05);
-  --radius:16px;
+  --text:#111827;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --green:#10b981;
+  --red:#e30613; /* UBS-Rot Anmutung */
+  --tab-gray:#9ca3af;
 }
 
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, Roboto, Arial, "Segoe UI", system-ui, sans-serif;
-  color:var(--ink);
   background:var(--bg);
-  padding-bottom:84px; /* Platz für Tabbar */
+  color:var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
 }
 
-/* Header */
-.app-header{
-  position:sticky; top:0; z-index:5;
-  background:#fff; border-bottom:1px solid #eef1f5;
+/* Topbar */
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:50;
+  display:grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items:center;
+  gap:.5rem;
+  padding:.75rem .75rem .5rem;
+  background:#fff;
+  border-bottom:1px solid var(--border);
 }
-.brand-wrap{
-  display:flex; align-items:center; gap:.6rem;
-  padding:14px 16px;
+.topbar-left{display:flex;align-items:center}
+.logo{
+  height:28px;           /* klein & dezent */
+  width:auto;
+  display:block;
 }
-.brand-logo{
-  height:28px; width:auto; display:block; object-fit:contain;
-}
-.brand{
-  font-size:22px; letter-spacing:.5px; margin:0; font-weight:800;
-}
-.brand-ai{ color:var(--brand-red); font-weight:900; }
-.reg{ font-size:.9rem; vertical-align:super; margin-left:2px; font-weight:600; color:#6b7280; }
 
-/* Month bar */
-.month-bar{
-  display:flex; align-items:center; justify-content:center;
-  gap:10px; padding:10px 12px;
-  background:#fff; border-bottom:1px solid #eef1f5;
+/* Monatswahl mittig & rot */
+.month-selector{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:.4rem;
 }
-.month-btn{
-  border:1px solid #e5e7eb; background:#fff; color:var(--ink);
-  height:40px; width:44px; border-radius:12px; font-size:22px; line-height:1;
+.icon-btn{
+  appearance:none;
+  border:1px solid var(--border);
+  background:#fff;
+  padding:.35rem .6rem;
+  border-radius:.6rem;
+  font-size:1.1rem;
+  line-height:1;
 }
+.icon-btn:active{transform:translateY(1px)}
 .month-pill{
-  min-width:60%; max-width:90%;
+  min-width: 220px;
+  max-width: 75vw;
+  padding:.55rem .9rem;
+  border:1px solid var(--border);
+  background:#f9fbff;
+  border-radius:.8rem;
   text-align:center;
-  border:1px solid #e5e7eb; background:#f9fafb;
-  padding:10px 14px; border-radius:12px;
-  font-weight:700; color:var(--brand-red);
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.month-label{
+  color:var(--red);
+  font-weight:700;
+  font-size:1.05rem;
 }
 
-/* Cards */
-main{ padding:16px; }
-.card{
-  background:var(--card); border-radius:var(--radius);
-  padding:16px; margin:12px 0; box-shadow:var(--shadow);
+/* Layout */
+#view-container{
+  padding: .75rem .75rem 5.5rem; /* Platz für Tabbar */
 }
-.card-title{ font-size:20px; font-weight:800; margin:0 0 8px; }
-.with-badge{ display:flex; align-items:center; justify-content:space-between; }
+.section-title{
+  font-size:1.35rem;
+  font-weight:800;
+  margin:.25rem .25rem .5rem;
+}
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:1rem;
+  padding:1rem;
+  margin:.75rem .25rem;
+  box-shadow: 0 1px 0 rgba(0,0,0,.03);
+}
+.card.muted{color:var(--muted)}
+.card-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:.5rem;
+}
+.card-header h3{
+  margin:0;
+  font-size:1.2rem;
+  font-weight:800;
+}
 .badge{
-  background:#eef2ff; color:#475569; font-weight:700; font-size:12px;
-  padding:4px 8px; border-radius:999px;
+  display:inline-block;
+  background:#eef2f7;
+  color:#6b7280;
+  padding:.2rem .55rem;
+  border-radius:.6rem;
+  font-size:.75rem;
+  font-weight:700;
 }
 
 .row{
-  display:flex; align-items:center; justify-content:space-between;
-  padding:8px 0; color:var(--ink-2);
-  border-bottom:1px dashed #eef1f5;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:.35rem 0;
+  gap:.75rem;
+  font-size:1.02rem;
 }
-.row:last-child{ border-bottom:none }
-.row.total{ font-weight:800; color:var(--ink) }
-.money{ font-variant-numeric: tabular-nums; }
-
-/* Views */
-.view{ display:none }
-.view--active{ display:block }
+.row.strong{font-weight:800}
+.amount{font-variant-numeric: tabular-nums;}
+.amount.pos{color:var(--green)}
+.amount.neg{color:var(--red)}
 
 /* Tabbar */
 .tabbar{
-  position:fixed; left:0; right:0; bottom:0; z-index:10;
-  background:#fff; border-top:1px solid #eef1f5;
-  display:flex; justify-content:space-around; align-items:center;
-  padding:8px 6px env(safe-area-inset-bottom);
+  position:fixed;
+  bottom:0; left:0; right:0;
+  background:#fff;
+  border-top:1px solid var(--border);
+  display:grid;
+  grid-template-columns: repeat(5,1fr);
+  gap:.25rem;
+  padding:.4rem .25rem .7rem;
+  z-index:60;
 }
 .tab{
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:4px; min-width:64px; padding:6px 8px; border-radius:12px;
-  border:none; background:transparent; color:#6b7280; font-weight:700;
+  appearance:none;
+  background:#fff;
+  border:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:.15rem;
+  font-size:.83rem;
+  color:var(--tab-gray);
 }
-.tab .ico{ font-size:20px; line-height:1 }
-.tab .lbl{ font-size:14px }
-.tab--active{ color:var(--brand-red); background:#fff5f5; }
-.tab:focus-visible{ outline:2px solid var(--brand-red) }
+.tab-ico{font-size:1.25rem; line-height:1}
+.tab.active{color:var(--red); font-weight:700}
+.tab:active{transform:translateY(1px)}
 
-/* Accessibility tap targets on iOS */
-button{ -webkit-tap-highlight-color: transparent; }
+/* Verhindert blaue Links/Focus-Styles auf iOS */
+button{color:inherit}
+button:focus{outline:none}
