@@ -1,214 +1,128 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
   <meta charset="utf-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>FAINANCE</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- App Header -->
+  <!-- Header -->
   <header class="app-header">
-    <div class="brand">
-      F<span class="ai">AI</span>NANCE<span class="r-sign">®</span>
+    <div class="brand-wrap">
+      <!-- Logo-Datei liegt im Repo-Root -->
+      <img src="IMG_4855.png" alt="FAINANCE Logo" class="brand-logo" />
+      <h1 class="brand">
+        F<span class="brand-ai">AI</span>NANCE<span class="reg">&reg;</span>
+      </h1>
     </div>
   </header>
 
-  <!-- Month Switcher (zentriert, rot) -->
+  <!-- Monats-Navigation -->
   <section class="month-bar">
-    <button class="chip nav" id="btnPrev" aria-label="Vorheriger Monat">‹</button>
-
-    <!-- zentraler, roter Chip -->
-    <button class="chip month-chip" id="btnMonth" aria-haspopup="dialog">
-      <span id="monthLabel">—</span>
-    </button>
-
-    <button class="chip nav" id="btnNext" aria-label="Nächster Monat">›</button>
-
-    <!-- verborgenes Month-Input (zum schnellen Wechsel) -->
-    <input type="month" id="monthPicker" class="hidden-month" />
+    <button class="month-btn" id="monthPrev" aria-label="Vorheriger Monat">‹</button>
+    <div class="month-pill" id="monthLabel" role="button" aria-label="Aktueller Monat"></div>
+    <button class="month-btn" id="monthNext" aria-label="Nächster Monat">›</button>
   </section>
 
-  <!-- Hauptinhalte -->
+  <!-- Inhalt -->
   <main id="viewContainer">
     <!-- Home -->
-    <section class="view active" id="view-home">
+    <section class="view view--active" id="view-home" aria-labelledby="tab-home">
       <div class="card">
-        <h2 class="card-title">Bilanz aktuell (Monat)</h2>
-        <div class="kv">
+        <div class="card-title">Bilanz aktuell (Monat)</div>
+        <div class="row">
           <span>Gesamt</span>
-          <strong class="sum" id="sum-total">CHF 0.00</strong>
+          <strong class="money" id="sum-total">CHF 0.00</strong>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-header">
-          <h3>Wallace</h3>
+        <div class="card-title with-badge">
+          <span>Wallace</span>
           <span class="badge">IST</span>
         </div>
-        <div class="kv"><span>Einnahmen</span><strong id="sum-w-income">CHF 0.00</strong></div>
-        <div class="kv"><span>Ausgaben</span><strong id="sum-w-expense">CHF 0.00</strong></div>
-        <div class="kv total"><span>Bilanz</span><strong id="sum-w-balance">CHF 0.00</strong></div>
+        <div class="row"><span>Einnahmen</span><strong class="money">CHF 0.00</strong></div>
+        <div class="row"><span>Ausgaben</span><strong class="money">CHF 0.00</strong></div>
+        <div class="row total"><span>Bilanz</span><strong class="money">CHF 0.00</strong></div>
       </div>
 
       <div class="card">
-        <div class="card-header">
-          <h3>Patricia</h3>
+        <div class="card-title with-badge">
+          <span>Patricia</span>
           <span class="badge">IST</span>
         </div>
-        <div class="kv"><span>Einnahmen</span><strong id="sum-p-income">CHF 0.00</strong></div>
-        <div class="kv"><span>Ausgaben</span><strong id="sum-p-expense">CHF 0.00</strong></div>
-        <div class="kv total"><span>Bilanz</span><strong id="sum-p-balance">CHF 0.00</strong></div>
+        <div class="row"><span>Einnahmen</span><strong class="money">CHF 0.00</strong></div>
+        <div class="row"><span>Ausgaben</span><strong class="money">CHF 0.00</strong></div>
+        <div class="row total"><span>Bilanz</span><strong class="money">CHF 0.00</strong></div>
       </div>
 
       <div class="card">
-        <div class="card-header">
-          <h3>Gemeinsam</h3>
+        <div class="card-title with-badge">
+          <span>Gemeinsam</span>
           <span class="badge">IST</span>
         </div>
-        <div class="kv"><span>Einnahmen</span><strong id="sum-g-income">CHF 0.00</strong></div>
-        <div class="kv"><span>Ausgaben</span><strong id="sum-g-expense">CHF 0.00</strong></div>
-        <div class="kv total"><span>Bilanz</span><strong id="sum-g-balance">CHF 0.00</strong></div>
+        <div class="row"><span>Einnahmen</span><strong class="money">CHF 0.00</strong></div>
+        <div class="row"><span>Ausgaben</span><strong class="money">CHF 0.00</strong></div>
+        <div class="row total"><span>Bilanz</span><strong class="money">CHF 0.00</strong></div>
       </div>
     </section>
 
     <!-- Wallace -->
-    <section class="view" id="view-wallace">
+    <section class="view" id="view-wallace" aria-labelledby="tab-wallace">
       <div class="card">
-        <h2 class="card-title">Wallace – Übersicht</h2>
-        <div class="kv"><span>Einnahmen</span><strong id="w-i">CHF 0.00</strong></div>
-        <div class="kv"><span>Ausgaben</span><strong id="w-e">CHF 0.00</strong></div>
-        <div class="kv total"><span>Bilanz</span><strong id="w-b">CHF 0.00</strong></div>
+        <div class="card-title with-badge"><span>Wallace</span><span class="badge">IST</span></div>
+        <div class="row"><span>Einnahmen</span><strong class="money">CHF 0.00</strong></div>
+        <div class="row"><span>Ausgaben</span><strong class="money">CHF 0.00</strong></div>
+        <div class="row total"><span>Bilanz</span><strong class="money">CHF 0.00</strong></div>
       </div>
     </section>
 
     <!-- Patricia -->
-    <section class="view" id="view-patricia">
+    <section class="view" id="view-patricia" aria-labelledby="tab-patricia">
       <div class="card">
-        <h2 class="card-title">Patricia – Übersicht</h2>
-        <div class="kv"><span>Einnahmen</span><strong id="p-i">CHF 0.00</strong></div>
-        <div class="kv"><span>Ausgaben</span><strong id="p-e">CHF 0.00</strong></div>
-        <div class="kv total"><span>Bilanz</span><strong id="p-b">CHF 0.00</strong></div>
+        <div class="card-title with-badge"><span>Patricia</span><span class="badge">IST</span></div>
+        <div class="row"><span>Einnahmen</span><strong class="money">CHF 0.00</strong></div>
+        <div class="row"><span>Ausgaben</span><strong class="money">CHF 0.00</strong></div>
+        <div class="row total"><span>Bilanz</span><strong class="money">CHF 0.00</strong></div>
       </div>
     </section>
 
     <!-- Gemeinsam -->
-    <section class="view" id="view-gemeinsam">
+    <section class="view" id="view-gemeinsam" aria-labelledby="tab-gemeinsam">
       <div class="card">
-        <h2 class="card-title">Gemeinsam – Übersicht</h2>
-        <div class="kv"><span>Einnahmen</span><strong id="g-i">CHF 0.00</strong></div>
-        <div class="kv"><span>Ausgaben</span><strong id="g-e">CHF 0.00</strong></div>
-        <div class="kv total"><span>Bilanz</span><strong id="g-b">CHF 0.00</strong></div>
+        <div class="card-title with-badge"><span>Gemeinsam</span><span class="badge">IST</span></div>
+        <div class="row"><span>Einnahmen</span><strong class="money">CHF 0.00</strong></div>
+        <div class="row"><span>Ausgaben</span><strong class="money">CHF 0.00</strong></div>
+        <div class="row total"><span>Bilanz</span><strong class="money">CHF 0.00</strong></div>
       </div>
     </section>
 
-    <!-- Einstellungen -->
-    <section class="view" id="view-settings">
-      <h2 class="section-title">Einstellungen</h2>
-
-      <!-- Wallace Einkommen -->
+    <!-- Einstellungen (Platzhalter) -->
+    <section class="view" id="view-settings" aria-labelledby="tab-settings">
       <div class="card">
-        <div class="card-header">
-          <h3>Wallace – Einnahmen</h3>
-        </div>
-        <div class="input-row">
-          <input id="add-w-i-label" class="input" placeholder="Bezeichnung" />
-          <input id="add-w-i-amount" class="input" inputmode="decimal" placeholder="Betrag (CHF)" />
-          <button class="btn add" data-add="w-i">Hinzufügen</button>
-        </div>
-        <ul class="list" id="list-w-i"></ul>
-      </div>
-
-      <!-- Wallace Ausgaben -->
-      <div class="card">
-        <div class="card-header">
-          <h3>Wallace – Ausgaben</h3>
-        </div>
-        <div class="input-row">
-          <input id="add-w-e-label" class="input" placeholder="Bezeichnung" />
-          <input id="add-w-e-amount" class="input" inputmode="decimal" placeholder="Betrag (CHF)" />
-          <button class="btn add" data-add="w-e">Hinzufügen</button>
-        </div>
-        <ul class="list" id="list-w-e"></ul>
-      </div>
-
-      <!-- Patricia Einkommen -->
-      <div class="card">
-        <div class="card-header">
-          <h3>Patricia – Einnahmen</h3>
-        </div>
-        <div class="input-row">
-          <input id="add-p-i-label" class="input" placeholder="Bezeichnung" />
-          <input id="add-p-i-amount" class="input" inputmode="decimal" placeholder="Betrag (CHF)" />
-          <button class="btn add" data-add="p-i">Hinzufügen</button>
-        </div>
-        <ul class="list" id="list-p-i"></ul>
-      </div>
-
-      <!-- Patricia Ausgaben -->
-      <div class="card">
-        <div class="card-header">
-          <h3>Patricia – Ausgaben</h3>
-        </div>
-        <div class="input-row">
-          <input id="add-p-e-label" class="input" placeholder="Bezeichnung" />
-          <input id="add-p-e-amount" class="input" inputmode="decimal" placeholder="Betrag (CHF)" />
-          <button class="btn add" data-add="p-e">Hinzufügen</button>
-        </div>
-        <ul class="list" id="list-p-e"></ul>
-      </div>
-
-      <!-- Gemeinsam Ausgaben/Einnahmen (optional erweiterbar) -->
-      <div class="card">
-        <div class="card-header">
-          <h3>Gemeinsam – Einnahmen</h3>
-        </div>
-        <div class="input-row">
-          <input id="add-g-i-label" class="input" placeholder="Bezeichnung" />
-          <input id="add-g-i-amount" class="input" inputmode="decimal" placeholder="Betrag (CHF)" />
-          <button class="btn add" data-add="g-i">Hinzufügen</button>
-        </div>
-        <ul class="list" id="list-g-i"></ul>
-      </div>
-
-      <div class="card">
-        <div class="card-header">
-          <h3>Gemeinsam – Ausgaben</h3>
-        </div>
-        <div class="input-row">
-          <input id="add-g-e-label" class="input" placeholder="Bezeichnung" />
-          <input id="add-g-e-amount" class="input" inputmode="decimal" placeholder="Betrag (CHF)" />
-          <button class="btn add" data-add="g-e">Hinzufügen</button>
-        </div>
-        <ul class="list" id="list-g-e"></ul>
+        <div class="card-title">Einstellungen</div>
+        <p>Hier kommen später Login, Daten-Speicherung etc.</p>
       </div>
     </section>
   </main>
 
-  <!-- Tabbar (fix unten) -->
-  <nav class="tabbar" id="tabbar">
-    <button class="tab active" data-view="home">
-      <div class="ico">🏠</div>
-      <div class="lbl">Home</div>
+  <!-- Bottom Nav -->
+  <nav class="tabbar" role="tablist">
+    <button id="tab-home" class="tab tab--active" data-target="view-home" role="tab" aria-selected="true">
+      <span class="ico">🏠</span><span class="lbl">Home</span>
     </button>
-    <button class="tab" data-view="wallace">
-      <div class="ico">👤</div>
-      <div class="lbl">Wallace</div>
+    <button id="tab-wallace" class="tab" data-target="view-wallace" role="tab">
+      <span class="ico">🧍‍♂️</span><span class="lbl">Wallace</span>
     </button>
-    <button class="tab" data-view="patricia">
-      <div class="ico">👤</div>
-      <div class="lbl">Patricia</div>
+    <button id="tab-patricia" class="tab" data-target="view-patricia" role="tab">
+      <span class="ico">🧍‍♀️</span><span class="lbl">Patricia</span>
     </button>
-    <button class="tab" data-view="gemeinsam">
-      <div class="ico">👥</div>
-      <div class="lbl">Gemeinsam</div>
+    <button id="tab-gemeinsam" class="tab" data-target="view-gemeinsam" role="tab">
+      <span class="ico">👥</span><span class="lbl">Gemeinsam</span>
     </button>
-    <button class="tab" data-view="settings">
-      <div class="ico">⚙️</div>
-      <div class="lbl">Einstellungen</div>
+    <button id="tab-settings" class="tab" data-target="view-settings" role="tab">
+      <span class="ico">⚙️</span><span class="lbl">Einstellungen</span>
     </button>
   </nav>
 
