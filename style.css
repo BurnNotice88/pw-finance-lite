@@ -1,137 +1,118 @@
-/* Grundlayout */
 :root{
-  --bg:#f4f7f8;
+  --bg:#f6faf9;
   --card:#ffffff;
-  --ink:#0d0f12;
-  --ink-muted:#5e6773;
-  --brand:#ff6151;
-  --accent:#13b87d;
-  --chip:#f1f3f5;
-  --chip-active:#ffeceb;
-  --border:#e6eaee;
-  --radius:16px;
+  --text:#0f1720;
+  --muted:#6b7a86;
+  --accent:#ff4a3d;
+  --ok:#10b981;
+  --ring:#e6eeec;
 }
 
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0;
-  font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color:var(--text);
   background:var(--bg);
-  color:var(--ink);
 }
 
-/* Header */
+/* Header / Branding */
 .app-header{
-  position:sticky; top:0; z-index:10;
-  background:var(--card);
-  padding:16px 20px;
-  border-bottom:1px solid var(--border);
+  position:sticky; top:0; z-index:5;
+  background:#fff;
+  border-bottom:1px solid var(--ring);
+  padding:14px 16px;
 }
-.brand{display:flex; align-items:baseline; gap:6px;}
-.brand-text{font-weight:800; letter-spacing:.5px; font-size:26px}
-.reg{font-size:12px; color:var(--ink-muted)}
+.brand{
+  display:flex; align-items:baseline; gap:.05em;
+  margin:0;
+  letter-spacing:.02em;
+  font-size:28px;
+  line-height:1;
+}
+.brand-f, .brand-rest { font-weight:800; }
+.brand-ai{ font-weight:900; }
+.brand-f, .brand-ai, .brand-rest{ text-transform:uppercase; }
+.brand-r{
+  font-size:60%;
+  vertical-align:text-top;
+  margin-left:.15em;
+  line-height:1;
+}
 
-/* Main */
-#app{padding:16px 16px 96px}
-.h1{font-size:32px; margin:12px 0 16px}
-.h2{font-size:24px; margin:4px 0 8px}
-.h3{font-size:16px; margin:16px 0 8px; color:var(--ink-muted)}
+/* Layout */
+#view-container{
+  padding:18px 16px 88px;
+}
+.view{ display:none; }
+.view.active{ display:block; }
+
+h2{
+  margin:8px 0 12px;
+  font-size:28px;
+  letter-spacing:.01em;
+}
+h3{ margin:14px 0 6px; }
+h4{ margin:12px 0 6px; color:var(--muted); font-weight:600; }
 
 .card{
   background:var(--card);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:16px;
+  border:1px solid var(--ring);
+  border-radius:16px;
+  padding:14px;
   margin:12px 0;
-  box-shadow:0 1px 0 rgba(0,0,0,.02);
+  box-shadow:0 1px 0 rgba(10,10,10,.03);
 }
-.card.dashed{
-  border-style:dashed;
-}
-.placeholder{color:var(--ink-muted); text-align:center; padding:20px 0}
-
 .row{
-  display:flex; justify-content:space-between; align-items:center;
-  padding:10px 0; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:10px 4px;
+  border-bottom:1px dashed var(--ring);
+  gap:10px;
 }
-.row:last-child{border-bottom:none}
-.row .label{color:var(--ink-muted)}
-.row.strong .label{font-weight:600; color:var(--ink)}
-.value{font-variant-numeric:tabular-nums; font-weight:700}
-.value.negative{color:#d33}
-.value.positive{color:var(--accent)}
+.row:last-child{ border-bottom:0; }
+.row.total div:last-child{ color:var(--ok); font-weight:800; }
+.amount{ font-weight:700; }
 
-/* Panels (Einstellungen) */
-.panel{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:16px;
-  margin:16px 0;
+/* Form */
+.grid{
+  display:grid;
+  grid-template-columns:1fr 140px;
+  gap:8px;
 }
-.panel.soft{background:#fbfcfd}
-
-.form-list .item{
-  display:grid; grid-template-columns:1fr 140px 40px; gap:8px;
-  align-items:center; margin:8px 0;
-}
-.input, .amount{
+input{
   width:100%;
-  border:1px solid var(--border);
-  border-radius:12px;
   padding:12px 12px;
-  background:#fff;
+  border-radius:10px;
+  border:1px solid var(--ring);
+  background:#fbfdfc;
   font-size:16px;
 }
-.amount{text-align:right}
+input:focus{ outline:2px solid #d5efe9; border-color:#bfe4dc; }
 
-.del{
-  border:1px solid var(--border);
-  background:#fff;
-  border-radius:12px;
-  height:44px;
+.actions{
+  display:flex; gap:10px; justify-content:flex-end; margin-top:14px;
 }
-.del:hover{background:#fff5f4}
-
-.actions{margin-top:8px}
-.actions.wrap{display:flex; gap:8px; flex-wrap:wrap}
 .btn{
-  background:var(--brand);
-  color:#fff; border:none; border-radius:999px;
-  padding:10px 14px; font-weight:600;
+  appearance:none; border:none; border-radius:12px;
+  padding:12px 14px; font-size:15px; font-weight:700;
 }
-.btn.ghost{
-  background:var(--chip);
-  color:var(--ink); border:1px solid var(--border);
+.btn.primary{ background:var(--text); color:#fff; }
+.btn.ghost{ background:#fff; border:1px solid var(--ring); color:var(--text); }
+.note{
+  background:#fff7ed; border:1px solid #ffe8cc; color:#7a4b00;
+  padding:10px 12px; border-radius:12px; margin:6px 0 12px;
 }
-.file{display:inline-flex; align-items:center; gap:8px; background:var(--chip); border:1px solid var(--border); border-radius:999px; padding:10px 14px; cursor:pointer}
-.file input{display:none}
-
-.hint{color:var(--ink-muted); font-size:12px; margin-top:8px}
 
 /* Tabs */
-.tab{display:none}
-.tab.active{display:block}
-
-/* Bottom Navigation */
-.bottom-nav{
-  position:fixed; left:0; right:0; bottom:0; z-index:5;
+.tabbar{
+  position:fixed; left:0; right:0; bottom:0; z-index:6;
   display:flex; gap:10px; justify-content:space-between;
-  padding:12px 12px env(safe-area-inset-bottom);
-  background:linear-gradient(180deg, rgba(244,247,248,0), rgba(244,247,248,1) 30%);
-  backdrop-filter:saturate(120%) blur(6px);
+  padding:10px; background:#fff; border-top:1px solid var(--ring);
 }
-.chip{
-  flex:1 1 auto;
-  background:var(--chip); border:1px solid var(--border);
-  border-radius:999px; height:44px;
-  display:flex; align-items:center; justify-content:center;
-  font-weight:700; color:#333;
+.tab{
+  flex:1; padding:10px 8px;
+  border-radius:999px; border:1px solid var(--ring);
+  background:#fff; font-weight:700;
 }
-.chip.active{background:var(--chip-active); border-color:#ffd1cc; color:#c23b2d}
-
-/* Responsive tweak */
-@media (min-width:720px){
-  #app{max-width:780px; margin:0 auto}
-}
+.tab.active{ background:#ffeceb; border-color:#ffd0cc; color:#b21c13; }
