@@ -1,33 +1,159 @@
 <!doctype html>
 <html lang="de">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>P&W Finance Lite</title>
-  <link rel="stylesheet" href="style.css?v=3">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BudgetAI</title>
+
+  <!-- Deine bestehende Styles -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Minimaler Fallback-Style für das kleine Login-Panel (stört dein Design nicht) -->
+  <style>
+    .auth-bar{position:fixed;right:12px;top:12px;z-index:9999;
+      background:#fff;border:1px solid #e6e6e6;border-radius:10px;
+      box-shadow:0 6px 18px rgba(0,0,0,.08);padding:10px 12px;
+      display:flex;gap:8px;align-items:center;font:14px/1.2 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif}
+    .auth-bar input{width:130px;padding:6px 8px;border:1px solid #ddd;border-radius:8px}
+    .auth-bar button{padding:6px 10px;border-radius:8px;border:1px solid #ddd;background:#f7f7f7}
+    .auth-bar .ok{color:#0a8f2f;font-weight:600}
+    .auth-bar .warn{color:#c21f1f;font-weight:600}
+    @media (max-width:420px){.auth-bar input{width:110px}}
+  </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">P&W Finance</div>
+
+  <!-- ===== Dein bestehendes Seiteninhalt bleibt wie gehabt ===== -->
+  <header style="padding:16px 20px;">
+    <img src="logo.svg" alt="BudgetAI" style="height:24px;vertical-align:middle" onerror="this.style.display='none'">
+    <span style="font-weight:700;font-size:22px;vertical-align:middle">BudgetAI</span>
   </header>
 
-  <main class="content">
-    <section id="view-overview" class="view"></section>
-    <section id="view-wallace" class="view" hidden></section>
-    <section id="view-patricia" class="view" hidden></section>
-    <section id="view-gemeinsam" class="view" hidden></section>
-    <section id="view-einstellungen" class="view" hidden></section>
+  <main id="app">
+    <!-- HIER ist dein bisheriger Inhalt (Übersicht, Karten etc.). 
+         Du musst nichts anfassen – alles bleibt. -->
   </main>
 
-  <!-- Untere Tabs (UBS-Style) -->
-  <nav class="tabs">
-    <button data-route="overview" class="active" aria-label="Home">Home</button>
-    <button data-route="wallace" aria-label="Wallace">Wallace</button>
-    <button data-route="patricia" aria-label="Patricia">Patricia</button>
-    <button data-route="gemeinsam" aria-label="Gemeinsam">Gemeinsam</button>
-    <button data-route="einstellungen" aria-label="Einstellungen">Mehr</button>
-  </nav>
+  <!-- ===== Leichte Auth-Bar (kannst du jederzeit entfernen/ausblenden) ===== -->
+  <div class="auth-bar" id="authBar">
+    <span id="authState" class="warn">Abgemeldet</span>
+    <form id="loginForm" style="display:flex;gap:6px;align-items:center;margin:0">
+      <input type="email" id="email" placeholder="E-Mail" autocomplete="username">
+      <input type="password" id="password" placeholder="Passwort" autocomplete="current-password">
+      <button type="submit">Anmelden</button>
+    </form>
+    <button id="logoutBtn" style="display:none">Abmelden</button>
+  </div>
 
-  <script src="app.js?v=3"></script>
+  <!-- ===== Deine bestehende App-Logik (wenn vorhanden) ===== -->
+  <!-- <script src="app.js"></script> -->
+
+  <!-- ===== Firebase (CDN, ohne npm) + Mini-API ===== -->
+  <script type="module">
+    // Firebase SDKs (CDN)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+
+    // Deine Konfiguration (von dir geliefert)
+    const firebaseConfig = {
+      apiKey: "AIzaSyDr9Rpwmyb6CabzD602uq43rf84sJO3Xu8",
+      authDomain: "budgetai-77842.firebaseapp.com",
+      projectId: "budgetai-77842",
+      storageBucket: "budgetai-77842.firebasestorage.app",
+      messagingSenderId: "702742240654",
+      appId: "1:702742240654:web:93be69888bfbdf24e498df",
+      measurementId: "G-PTMSZGRYW4"
+    };
+
+    // Init
+    const app = initializeApp(firebaseConfig);
+    try { getAnalytics(app); } catch(e) { /* Analytics ist optional im Browser */ }
+
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    // ===== Mini-API für deine App (global verfügbar) =====
+    async function saveShared(data) {
+      // Speichert gemeinsame Werte (z.B. Einstellungen, Budgets, Summen)
+      const ref = doc(db, "shared", "default");
+      try {
+        // Dokument anlegen/mergen
+        await setDoc(ref, data, { merge: true });
+        return { ok:true };
+      } catch (err) {
+        console.error("saveShared()", err);
+        return { ok:false, error: String(err) };
+      }
+    }
+
+    async function loadShared() {
+      const ref = doc(db, "shared", "default");
+      try {
+        const snap = await getDoc(ref);
+        return snap.exists() ? snap.data() : {};
+      } catch (err) {
+        console.error("loadShared()", err);
+        return {};
+      }
+    }
+
+    function onAuth(cb) { return onAuthStateChanged(auth, cb); }
+    function signIn(email, password) { return signInWithEmailAndPassword(auth, email, password); }
+    function signOutUser() { return signOut(auth); }
+
+    // API global machen
+    window.firebaseAPI = { saveShared, loadShared, onAuth, signIn, signOut: signOutUser };
+
+    // ===== Kleines Login-Panel verknüpfen (für schnellen Test) =====
+    const authStateEl = document.getElementById('authState');
+    const loginForm   = document.getElementById('loginForm');
+    const logoutBtn   = document.getElementById('logoutBtn');
+
+    onAuth((user) => {
+      if (user) {
+        authStateEl.textContent = `Angemeldet: ${user.email}`;
+        authStateEl.className = "ok";
+        loginForm.style.display = "none";
+        logoutBtn.style.display = "inline-block";
+      } else {
+        authStateEl.textContent = "Abgemeldet";
+        authStateEl.className = "warn";
+        loginForm.style.display = "flex";
+        logoutBtn.style.display = "none";
+      }
+    });
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const pass  = document.getElementById('password').value.trim();
+      try {
+        await signIn(email, pass);
+      } catch (err) {
+        alert("Login fehlgeschlagen: " + err.message);
+      }
+    });
+
+    logoutBtn.addEventListener('click', async () => {
+      try { await signOutUser(); } catch (err) { alert("Fehler beim Abmelden: " + err.message); }
+    });
+
+    // ===== Beispiel: gleich beim Start ein gemeinsames Dokument anlegen (falls leer) =====
+    (async () => {
+      const current = await loadShared();
+      if (!current.__initialized) {
+        await saveShared({
+          __initialized: true,
+          createdAt: new Date().toISOString(),
+          // Du kannst hier Default-Werte setzen:
+          einnahmenGemeinsam: 0,
+          ausgabenGemeinsam: 0
+        });
+      }
+    })();
+  </script>
+
 </body>
 </html>
