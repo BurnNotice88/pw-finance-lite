@@ -1,247 +1,118 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FAINANCE</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <!-- Header -->
-  <header class="app-header">
+  <header class="topbar">
     <div class="brand">
-      <span class="brand-left">F</span><strong class="brand-ai">AI</strong><span class="brand-right">NANCE</span><span class="brand-r">®</span>
+      F<span class="ai">AI</span>NANCE<span class="reg">®</span>
     </div>
-
-    <div class="period-picker">
-      <button class="icon-btn" id="prevMonth" aria-label="Voriger Monat">‹</button>
-      <select id="monthSelect" aria-label="Monat auswählen"></select>
-      <button class="icon-btn" id="nextMonth" aria-label="Nächster Monat">›</button>
-    </div>
+    <div class="spacer"></div>
   </header>
 
-  <!-- Hauptinhalt (Tabs) -->
-  <main id="view-container">
-    <!-- Home (Dashboard) -->
-    <section class="view active" id="view-home" aria-labelledby="home-title">
-      <h1 id="home-title" class="page-title">Übersicht</h1>
-
-      <!-- Wallace -->
-      <article class="card">
-        <div class="card-head">
-          <h2>Wallace</h2>
-          <span class="chip">IST</span>
-        </div>
-        <div class="rows">
-          <div class="row">
-            <span>Einnahmen</span>
-            <span class="money" id="w-inc">CHF 0.00</span>
-          </div>
-          <div class="row">
-            <span>Ausgaben</span>
-            <span class="money" id="w-exp">CHF 0.00</span>
-          </div>
-          <div class="divider"></div>
-          <div class="row strong">
-            <span>Bilanz</span>
-            <span class="money" id="w-bal">CHF 0.00</span>
-          </div>
-        </div>
-      </article>
-
-      <!-- Patricia -->
-      <article class="card">
-        <div class="card-head">
-          <h2>Patricia</h2>
-          <span class="chip">IST</span>
-        </div>
-        <div class="rows">
-          <div class="row">
-            <span>Einnahmen</span>
-            <span class="money" id="p-inc">CHF 0.00</span>
-          </div>
-          <div class="row">
-            <span>Ausgaben</span>
-            <span class="money" id="p-exp">CHF 0.00</span>
-          </div>
-          <div class="divider"></div>
-          <div class="row strong">
-            <span>Bilanz</span>
-            <span class="money" id="p-bal">CHF 0.00</span>
-          </div>
-        </div>
-      </article>
-
-      <!-- Gemeinsam -->
-      <article class="card">
-        <div class="card-head">
-          <h2>Gemeinsam</h2>
-          <span class="chip">IST</span>
-        </div>
-        <div class="rows">
-          <div class="row">
-            <span>Einnahmen</span>
-            <span class="money" id="g-inc">CHF 0.00</span>
-          </div>
-          <div class="row">
-            <span>Ausgaben</span>
-            <span class="money" id="g-exp">CHF 0.00</span>
-          </div>
-          <div class="divider"></div>
-          <div class="row strong">
-            <span>Bilanz</span>
-            <span class="money" id="g-bal">CHF 0.00</span>
-          </div>
-        </div>
-      </article>
-
-      <!-- Schulden -->
-      <article class="card">
-        <div class="card-head">
-          <h2>Schulden</h2>
-        </div>
-        <div class="rows">
-          <div class="row">
-            <span>Wallace</span>
-            <span class="money" id="w-debt">CHF 0.00</span>
-          </div>
-          <div class="row">
-            <span>Patricia</span>
-            <span class="money" id="p-debt">CHF 0.00</span>
-          </div>
-        </div>
-      </article>
+  <!-- Inhalt -->
+  <main id="app" class="content">
+    <!-- Home -->
+    <section id="view-home" class="view view--active" aria-labelledby="tab-home">
+      <h1 class="h1">Übersicht</h1>
+      <div class="card">
+        <div class="card-title">Wallace – Einnahmen</div>
+        <div class="card-value">CHF 0.00</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Wallace – Ausgaben</div>
+        <div class="card-value">CHF 0.00</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Bilanz</div>
+        <div class="card-value good">CHF 0.00</div>
+      </div>
     </section>
 
-    <!-- Wallace Detail -->
-    <section class="view" id="view-wallace" aria-labelledby="w-title">
-      <h1 id="w-title" class="page-title">Wallace</h1>
-      <article class="card">
-        <div class="card-head"><h2>Einnahmen</h2></div>
-        <div id="w-inc-list" class="kv-list"></div>
-      </article>
-      <article class="card">
-        <div class="card-head"><h2>Ausgaben</h2></div>
-        <div id="w-exp-list" class="kv-list"></div>
-      </article>
+    <!-- Wallace -->
+    <section id="view-wallace" class="view" aria-labelledby="tab-wallace">
+      <h1 class="h1">Wallace</h1>
+      <div class="card"><div class="card-title">Einnahmen</div><div class="card-value">CHF 0.00</div></div>
+      <div class="card"><div class="card-title">Ausgaben</div><div class="card-value">CHF 0.00</div></div>
     </section>
 
-    <!-- Patricia Detail -->
-    <section class="view" id="view-patricia" aria-labelledby="p-title">
-      <h1 id="p-title" class="page-title">Patricia</h1>
-      <article class="card">
-        <div class="card-head"><h2>Einnahmen</h2></div>
-        <div id="p-inc-list" class="kv-list"></div>
-      </article>
-      <article class="card">
-        <div class="card-head"><h2>Ausgaben</h2></div>
-        <div id="p-exp-list" class="kv-list"></div>
-      </article>
+    <!-- Patricia -->
+    <section id="view-patricia" class="view" aria-labelledby="tab-patricia">
+      <h1 class="h1">Patricia</h1>
+      <div class="card"><div class="card-title">Einnahmen</div><div class="card-value">CHF 0.00</div></div>
+      <div class="card"><div class="card-title">Ausgaben</div><div class="card-value">CHF 0.00</div></div>
     </section>
 
-    <!-- Gemeinsam Detail -->
-    <section class="view" id="view-gemeinsam" aria-labelledby="g-title">
-      <h1 id="g-title" class="page-title">Gemeinsam</h1>
-      <article class="card">
-        <div class="card-head"><h2>Einnahmen</h2></div>
-        <div id="g-inc-list" class="kv-list"></div>
-      </article>
-      <article class="card">
-        <div class="card-head"><h2>Ausgaben</h2></div>
-        <div id="g-exp-list" class="kv-list"></div>
-      </article>
+    <!-- Gemeinsam -->
+    <section id="view-gemeinsam" class="view" aria-labelledby="tab-gemeinsam">
+      <h1 class="h1">Gemeinsam</h1>
+      <div class="card"><div class="card-title">Einnahmen</div><div class="card-value">CHF 0.00</div></div>
+      <div class="card"><div class="card-title">Ausgaben</div><div class="card-value">CHF 0.00</div></div>
     </section>
 
-    <!-- Einstellungen (einzige editierbare Ansicht) -->
-    <section class="view" id="view-settings" aria-labelledby="s-title">
-      <h1 id="s-title" class="page-title">Einstellungen</h1>
-
-      <article class="card">
-        <div class="card-head"><h2>Wallace – Einnahmen</h2></div>
-        <form class="form-grid" data-scope="w" data-type="income">
-          <div class="field"><input type="text" placeholder="Bezeichnung" /></div>
-          <div class="field"><input type="number" inputmode="decimal" step="0.01" placeholder="Betrag (CHF)" /></div>
-          <button type="button" class="btn" data-action="add">Hinzufügen</button>
-        </form>
-        <div class="mini-list" id="w-income-edit"></div>
-      </article>
-
-      <article class="card">
-        <div class="card-head"><h2>Wallace – Ausgaben</h2></div>
-        <form class="form-grid" data-scope="w" data-type="expense">
-          <div class="field"><input type="text" placeholder="Bezeichnung" /></div>
-          <div class="field"><input type="number" inputmode="decimal" step="0.01" placeholder="Betrag (CHF)" /></div>
-          <button type="button" class="btn" data-action="add">Hinzufügen</button>
-        </form>
-        <div class="mini-list" id="w-expense-edit"></div>
-      </article>
-
-      <article class="card">
-        <div class="card-head"><h2>Patricia – Einnahmen</h2></div>
-        <form class="form-grid" data-scope="p" data-type="income">
-          <div class="field"><input type="text" placeholder="Bezeichnung" /></div>
-          <div class="field"><input type="number" inputmode="decimal" step="0.01" placeholder="Betrag (CHF)" /></div>
-          <button type="button" class="btn" data-action="add">Hinzufügen</button>
-        </form>
-        <div class="mini-list" id="p-income-edit"></div>
-      </article>
-
-      <article class="card">
-        <div class="card-head"><h2>Patricia – Ausgaben</h2></div>
-        <form class="form-grid" data-scope="p" data-type="expense">
-          <div class="field"><input type="text" placeholder="Bezeichnung" /></div>
-          <div class="field"><input type="number" inputmode="decimal" step="0.01" placeholder="Betrag (CHF)" /></div>
-          <button type="button" class="btn" data-action="add">Hinzufügen</button>
-        </form>
-        <div class="mini-list" id="p-expense-edit"></div>
-      </article>
-
-      <article class="card">
-        <div class="card-head"><h2>Gemeinsam – Einnahmen</h2></div>
-        <form class="form-grid" data-scope="g" data-type="income">
-          <div class="field"><input type="text" placeholder="Bezeichnung" /></div>
-          <div class="field"><input type="number" inputmode="decimal" step="0.01" placeholder="Betrag (CHF)" /></div>
-          <button type="button" class="btn" data-action="add">Hinzufügen</button>
-        </form>
-        <div class="mini-list" id="g-income-edit"></div>
-      </article>
-
-      <article class="card">
-        <div class="card-head"><h2>Gemeinsam – Ausgaben</h2></div>
-        <form class="form-grid" data-scope="g" data-type="expense">
-          <div class="field"><input type="text" placeholder="Bezeichnung" /></div>
-          <div class="field"><input type="number" inputmode="decimal" step="0.01" placeholder="Betrag (CHF)" /></div>
-          <button type="button" class="btn" data-action="add">Hinzufügen</button>
-        </form>
-        <div class="mini-list" id="g-expense-edit"></div>
-      </article>
-
-      <article class="card">
-        <div class="card-head"><h2>Schulden</h2></div>
-        <form class="form-grid" data-scope="w" data-type="debt">
-          <div class="field"><input type="text" placeholder="Wallace – Bezeichnung" /></div>
-          <div class="field"><input type="number" inputmode="decimal" step="0.01" placeholder="Betrag (CHF)" /></div>
-          <button type="button" class="btn" data-action="add">Hinzufügen</button>
-        </form>
-        <div class="mini-list" id="w-debt-edit"></div>
-
-        <form class="form-grid" data-scope="p" data-type="debt">
-          <div class="field"><input type="text" placeholder="Patricia – Bezeichnung" /></div>
-          <div class="field"><input type="number" inputmode="decimal" step="0.01" placeholder="Betrag (CHF)" /></div>
-          <button type="button" class="btn" data-action="add">Hinzufügen</button>
-        </form>
-        <div class="mini-list" id="p-debt-edit"></div>
-      </article>
+    <!-- Einstellungen -->
+    <section id="view-settings" class="view" aria-labelledby="tab-settings">
+      <h1 class="h1">Einstellungen</h1>
+      <div class="card">
+        <div class="card-title">Monatliche Werte bearbeiten</div>
+        <div class="muted">Hier kommen deine Inputs hin …</div>
+      </div>
     </section>
   </main>
 
-  <!-- Bottom Nav -->
-  <nav class="tabbar" aria-label="Navigation">
-    <button data-target="view-home" class="tab active">Home</button>
-    <button data-target="view-wallace" class="tab">Wallace</button>
-    <button data-target="view-patricia" class="tab">Patricia</button>
-    <button data-target="view-gemeinsam" class="tab">Gemeinsam</button>
-    <button data-target="view-settings" class="tab">Einstellungen</button>
+  <!-- Bottom Nav (UBS-Style: Icon + Text, aktiv rot) -->
+  <nav class="tabbar" role="tablist" aria-label="Navigation">
+    <button id="tab-home" class="tab tab--active" role="tab" aria-controls="view-home" aria-selected="true" data-target="home">
+      <!-- Home Icon -->
+      <svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 10.5L12 4l9 6.5v8a1.5 1.5 0 0 1-1.5 1.5H4.5A1.5 1.5 0 0 1 3 18.5v-8z" fill="none" stroke="currentColor" stroke-width="2" />
+        <path d="M9 20v-6h6v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span class="tab-label">Home</span>
+    </button>
+
+    <button id="tab-wallace" class="tab" role="tab" aria-controls="view-wallace" aria-selected="false" data-target="wallace">
+      <!-- Person Icon -->
+      <svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M4 20a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span class="tab-label">Wallace</span>
+    </button>
+
+    <button id="tab-patricia" class="tab" role="tab" aria-controls="view-patricia" aria-selected="false" data-target="patricia">
+      <!-- Person Icon (zweite) -->
+      <svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M4 20a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span class="tab-label">Patricia</span>
+    </button>
+
+    <button id="tab-gemeinsam" class="tab" role="tab" aria-controls="view-gemeinsam" aria-selected="false" data-target="gemeinsam">
+      <!-- Group Icon -->
+      <svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
+        <circle cx="16" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
+        <path d="M3 20a6 6 0 0 1 10-4M21 20a6 6 0 0 0-10-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <span class="tab-label">Gemeinsam</span>
+    </button>
+
+    <button id="tab-settings" class="tab" role="tab" aria-controls="view-settings" aria-selected="false" data-target="settings">
+      <!-- More/Settings Icon -->
+      <svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="5" cy="12" r="2" fill="currentColor"/>
+        <circle cx="12" cy="12" r="2" fill="currentColor"/>
+        <circle cx="19" cy="12" r="2" fill="currentColor"/>
+      </svg>
+      <span class="tab-label">Einstellungen</span>
+    </button>
   </nav>
 
   <script src="app.js"></script>
