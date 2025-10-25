@@ -2,130 +2,193 @@
 <html lang="de">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>FAINANCE®</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Header: nur Text, kein Bild -->
+
+  <!-- Header -->
   <header class="app-header">
-    <div class="brand">FAINANCE<sup>®</sup></div>
+    <div class="brand">
+      <span class="brand-text">FAINANCE</span><sup class="reg">®</sup>
+    </div>
   </header>
 
-  <main class="app-main">
-    <!-- HOME -->
-    <section id="view-home" class="view is-active" aria-labelledby="home-title" role="region">
-      <h1 id="home-title" class="title">Übersicht</h1>
-
-      <div id="home-cards" class="cards"></div>
-
-      <section class="card chart-card">
-        <h2 class="subtitle">Monatsverlauf (Bilanz, Beispiel)</h2>
-        <canvas id="chart-balance" aria-label="Balkendiagramm Bilanz" role="img"></canvas>
-        <p class="chart-caption">Beispieldaten – echte Werte können wir später einlesen.</p>
-      </section>
-    </section>
-
-    <!-- WALLACE -->
-    <section id="view-wallace" class="view" aria-labelledby="w-title" role="region">
-      <h1 id="w-title" class="title">Wallace</h1>
-      <div id="w-summary" class="card"></div>
-    </section>
-
-    <!-- PATRICIA -->
-    <section id="view-patricia" class="view" aria-labelledby="p-title" role="region">
-      <h1 id="p-title" class="title">Patricia</h1>
-      <div id="p-summary" class="card"></div>
-    </section>
-
-    <!-- GEMEINSAM -->
-    <section id="view-gemeinsam" class="view" aria-labelledby="g-title" role="region">
-      <h1 id="g-title" class="title">Gemeinsam</h1>
-      <div id="g-summary" class="card"></div>
-    </section>
-
-    <!-- MEHR (Zentrales Bearbeiten) -->
-    <section id="view-mehr" class="view" aria-labelledby="more-title" role="region">
-      <h1 id="more-title" class="title">Mehr</h1>
+  <!-- Inhalt -->
+  <main id="app">
+    <!-- Home -->
+    <section id="tab-home" class="tab active">
+      <h1 class="h1">Übersicht</h1>
 
       <div class="card">
-        <h2 class="subtitle">Einnahmen & Ausgaben bearbeiten (zentral)</h2>
-
-        <form id="form-mehr" class="mehr-grid">
-          <!-- Wallace -->
-          <fieldset class="mehr-section">
-            <legend>Wallace</legend>
-            <label class="field">
-              <span>Einnahmen (CHF)</span>
-              <input id="mw-income" name="mw-income" type="number" inputmode="decimal" step="0.05" />
-            </label>
-            <label class="field">
-              <span>Ausgaben (CHF)</span>
-              <input id="mw-expense" name="mw-expense" type="number" inputmode="decimal" step="0.05" />
-            </label>
-          </fieldset>
-
-          <!-- Patricia -->
-          <fieldset class="mehr-section">
-            <legend>Patricia</legend>
-            <label class="field">
-              <span>Einnahmen (CHF)</span>
-              <input id="mp-income" name="mp-income" type="number" inputmode="decimal" step="0.05" />
-            </label>
-            <label class="field">
-              <span>Ausgaben (CHF)</span>
-              <input id="mp-expense" name="mp-expense" type="number" inputmode="decimal" step="0.05" />
-            </label>
-          </fieldset>
-
-          <!-- Gemeinsam -->
-          <fieldset class="mehr-section">
-            <legend>Gemeinsam</legend>
-            <label class="field">
-              <span>Einnahmen (CHF)</span>
-              <input id="mg-income" name="mg-income" type="number" inputmode="decimal" step="0.05" />
-            </label>
-            <label class="field">
-              <span>Ausgaben (CHF)</span>
-              <input id="mg-expense" name="mg-expense" type="number" inputmode="decimal" step="0.05" />
-            </label>
-          </fieldset>
-
-          <div class="mehr-actions">
-            <button id="btn-save-all" class="btn primary" type="submit">Alle speichern</button>
-            <button id="btn-reset-defaults" class="btn danger" type="button">Auf Standardwerte zurücksetzen</button>
-          </div>
-        </form>
+        <div class="row">
+          <div class="label">Wallace – Einnahmen</div>
+          <div class="value" id="home-w-income">CHF 0.00</div>
+        </div>
+        <div class="row">
+          <div class="label">Ausgaben</div>
+          <div class="value" id="home-w-expense">CHF 0.00</div>
+        </div>
+        <div class="row strong">
+          <div class="label">Bilanz</div>
+          <div class="value positive" id="home-w-balance">CHF 0.00</div>
+        </div>
       </div>
 
       <div class="card">
-        <h2 class="subtitle">Daten exportieren / importieren</h2>
-        <div class="btn-row">
-          <button id="btn-export" class="btn">Export (Datei)</button>
-          <button id="btn-copy" class="btn">Export (Zwischenablage)</button>
+        <div class="row">
+          <div class="label">Patricia – Einnahmen</div>
+          <div class="value" id="home-p-income">CHF 0.00</div>
         </div>
-        <div class="field">
-          <label for="import-text">Import (JSON einfügen)</label>
-          <textarea id="import-text" rows="4" placeholder='{"wallace":{"income":0,"expense":0},"patricia":{...},"gemeinsam":{...}}'></textarea>
+        <div class="row">
+          <div class="label">Ausgaben</div>
+          <div class="value" id="home-p-expense">CHF 0.00</div>
         </div>
-        <div class="btn-row">
-          <button id="btn-import" class="btn primary">Import anwenden</button>
-          <button id="btn-clear" class="btn danger">Alle lokalen Daten löschen</button>
+        <div class="row strong">
+          <div class="label">Bilanz</div>
+          <div class="value positive" id="home-p-balance">CHF 0.00</div>
         </div>
-        <p class="hint">Speicherung erfolgt lokal auf diesem Gerät (localStorage). Für Sync zwischen Geräten schalten wir später Cloud-Speicher wieder zu.</p>
+      </div>
+
+      <div class="card">
+        <div class="row">
+          <div class="label">Gemeinsam – Einnahmen</div>
+          <div class="value" id="home-g-income">CHF 0.00</div>
+        </div>
+        <div class="row">
+          <div class="label">Ausgaben</div>
+          <div class="value" id="home-g-expense">CHF 0.00</div>
+        </div>
+        <div class="row strong">
+          <div class="label">Bilanz</div>
+          <div class="value positive" id="home-g-balance">CHF 0.00</div>
+        </div>
+      </div>
+
+      <div class="card dashed">
+        <div class="placeholder">Monatsverlauf (Platzhalter)</div>
+      </div>
+    </section>
+
+    <!-- Wallace -->
+    <section id="tab-wallace" class="tab">
+      <h1 class="h1">Wallace</h1>
+      <div class="card">
+        <div class="row">
+          <div class="label">Einnahmen</div>
+          <div class="value" id="w-income">CHF 0.00</div>
+        </div>
+        <div class="row">
+          <div class="label">Ausgaben</div>
+          <div class="value" id="w-expense">CHF 0.00</div>
+        </div>
+        <div class="row strong">
+          <div class="label">Bilanz</div>
+          <div class="value positive" id="w-balance">CHF 0.00</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Patricia -->
+    <section id="tab-patricia" class="tab">
+      <h1 class="h1">Patricia</h1>
+      <div class="card">
+        <div class="row">
+          <div class="label">Einnahmen</div>
+          <div class="value" id="p-income">CHF 0.00</div>
+        </div>
+        <div class="row">
+          <div class="label">Ausgaben</div>
+          <div class="value" id="p-expense">CHF 0.00</div>
+        </div>
+        <div class="row strong">
+          <div class="label">Bilanz</div>
+          <div class="value positive" id="p-balance">CHF 0.00</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gemeinsam (berechnet aus Wallace + Patricia) -->
+    <section id="tab-gemeinsam" class="tab">
+      <h1 class="h1">Gemeinsam</h1>
+      <div class="card">
+        <div class="row">
+          <div class="label">Einnahmen</div>
+          <div class="value" id="g-income">CHF 0.00</div>
+        </div>
+        <div class="row">
+          <div class="label">Ausgaben</div>
+          <div class="value" id="g-expense">CHF 0.00</div>
+        </div>
+        <div class="row strong">
+          <div class="label">Bilanz</div>
+          <div class="value positive" id="g-balance">CHF 0.00</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Einstellungen (wie früher) -->
+    <section id="tab-settings" class="tab">
+      <h1 class="h1">Einstellungen</h1>
+
+      <!-- Wallace Editor -->
+      <div class="panel">
+        <h2 class="h2">Wallace</h2>
+
+        <h3 class="h3">Einnahmen</h3>
+        <div id="w-income-list" class="form-list"></div>
+        <div class="actions">
+          <button class="btn" data-add="w-income">+ Einnahme hinzufügen</button>
+        </div>
+
+        <h3 class="h3">Ausgaben</h3>
+        <div id="w-expense-list" class="form-list"></div>
+        <div class="actions">
+          <button class="btn" data-add="w-expense">+ Ausgabe hinzufügen</button>
+        </div>
+      </div>
+
+      <!-- Patricia Editor -->
+      <div class="panel">
+        <h2 class="h2">Patricia</h2>
+
+        <h3 class="h3">Einnahmen</h3>
+        <div id="p-income-list" class="form-list"></div>
+        <div class="actions">
+          <button class="btn" data-add="p-income">+ Einnahme hinzufügen</button>
+        </div>
+
+        <h3 class="h3">Ausgaben</h3>
+        <div id="p-expense-list" class="form-list"></div>
+        <div class="actions">
+          <button class="btn" data-add="p-expense">+ Ausgabe hinzufügen</button>
+        </div>
+      </div>
+
+      <div class="panel soft">
+        <div class="actions wrap">
+          <button id="reset-demo" class="btn ghost">Beispieldaten laden</button>
+          <button id="export-json" class="btn ghost">Exportieren (JSON)</button>
+          <label class="file">
+            Importieren (JSON)
+            <input id="import-json" type="file" accept="application/json">
+          </label>
+        </div>
+        <div class="hint">Alle Eingaben werden automatisch gespeichert.</div>
       </div>
     </section>
   </main>
 
-  <!-- Tabs unten -->
-  <nav class="tabbar" role="tablist" aria-label="Navigation">
-    <button class="tab is-active" data-target="home"     role="tab" aria-selected="true">Home</button>
-    <button class="tab"           data-target="wallace"  role="tab" aria-selected="false">Wallace</button>
-    <button class="tab"           data-target="patricia" role="tab" aria-selected="false">Patricia</button>
-    <button class="tab"           data-target="gemeinsam"role="tab" aria-selected="false">Gemeinsam</button>
-    <button class="tab"           data-target="mehr"     role="tab" aria-selected="false">Mehr</button>
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <button class="chip active" data-tab="home">Home</button>
+    <button class="chip" data-tab="wallace">Wallace</button>
+    <button class="chip" data-tab="patricia">Patricia</button>
+    <button class="chip" data-tab="gemeinsam">Gemeinsam</button>
+    <button class="chip" data-tab="settings">Einstellungen</button>
   </nav>
 
-  <script src="app.js" defer></script>
+  <script src="app.js"></script>
 </body>
 </html>
