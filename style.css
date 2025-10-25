@@ -1,65 +1,59 @@
 :root{
-  --bg:#f6f7f8;
+  --bg:#f5f8f9;
   --card:#ffffff;
-  --text:#111;
-  --muted:#6b7280;
-  --brand:#d62f2f;
-  --ok:#16a34a;
-  --tabbar-h:66px;
+  --text:#101418;
+  --muted:#98a2aa;
+  --green:#16a34a;
+  --red:#b91c1c;
+  --border:#e6eaed;
+  --brand:#d64032; /* dunkleres UBS-Rot */
 }
 
 *{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  font-family: -apple-system, system-ui, Segoe UI, Roboto, Arial, sans-serif;
-  color:var(--text);
-  background:var(--bg);
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif}
+
+.topbar{
+  position:sticky;top:0;z-index:10;
+  background:#fff;border-bottom:1px solid var(--border);
+  padding:14px 18px
 }
 
-.app-header{
-  position:sticky; top:0; z-index:5;
-  background:#fff; border-bottom:1px solid #e5e7eb;
-  padding:12px 16px env(safe-area-inset-top) 16px;
-}
-.brand .logo{font-weight:700; font-size:20px}
-.logo-ai{color:var(--brand);}
+.brand{font-weight:800;font-size:22px;letter-spacing:.2px}
+.brand .ai{color:var(--brand)}
 
-.screens{
-  padding:16px;
-  padding-bottom: calc(var(--tabbar-h) + 24px + env(safe-area-inset-bottom));
-}
-.screen{display:none; animation:fade .16s ease}
-.screen.active{display:block}
-@keyframes fade{from{opacity:.7; transform:translateY(4px)}to{opacity:1; transform:none}}
+main{padding:18px 14px 96px 14px;max-width:880px;margin:0 auto}
+h1{font-size:28px;margin:6px 0 14px}
 
-h1{font-size:22px; margin:12px 2px}
+.cards{display:flex;flex-direction:column;gap:10px}
 .card{
-  background:var(--card); border:1px solid #e5e7eb; border-radius:14px;
-  box-shadow:0 1px 3px rgba(0,0,0,.04);
-  padding:14px; margin:12px 0;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:14px;padding:14px 16px
+}
+.row{display:flex;justify-content:space-between;align-items:center;padding:8px 0}
+.row + .row{border-top:1px dashed var(--border)}
+
+.amount{font-weight:800}
+.amount.positive{color:var(--green)}
+.amount.negative{color:var(--red)}
+
+.chart-placeholder{
+  margin-top:14px;border:2px dashed var(--border);border-radius:14px;
+  padding:24px;text-align:center;color:var(--muted);background:#f8fbfc
 }
 
-/* Tabbar */
-.tabbar{
-  position:fixed; left:0; right:0; bottom:0;
-  height: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
-  padding-bottom: env(safe-area-inset-bottom);
-  display:flex; justify-content:space-around; align-items:center; gap:4px;
-  background:#fff; border-top:1px solid #e5e7eb;
-  z-index:1000; /* WICHTIG: über allen Inhalten */
+/* VIEWS (nur eine sichtbar) */
+.view{display:none}
+.view.active{display:block}
+
+/* Bottom Tabs */
+.tabs{
+  position:fixed;left:0;right:0;bottom:0;z-index:20;
+  background:#fff;border-top:1px solid var(--border);
+  display:flex;gap:6px;justify-content:space-around;
+  padding:8px 8px calc(env(safe-area-inset-bottom,0) + 8px)
 }
 .tab{
-  appearance:none; border:0; background:transparent; color:var(--muted);
-  font:600 14px/1.2 inherit; padding:8px 10px; border-radius:10px;
+  flex:1;border:0;background:transparent;padding:10px 6px;border-radius:10px;
+  font-weight:600;color:#6b7280
 }
-.tab.active{ color:var(--brand); background:#fef2f2 }
-
-/* Toast – blockiert KEINE Klicks */
-.toast{
-  position:fixed; top:10px; left:50%; transform:translateX(-50%);
-  background:#fee2e2; color:#991b1b; border:1px solid #fecaca; border-radius:10px;
-  padding:10px 12px; font-size:13px; z-index:1500; display:none;
-  pointer-events:none; /* <- damit sie niemals Buttons blockiert */
-}
-.toast.show{display:block}
+.tab.active{color:var(--brand);background:#fff5f4;border:1px solid #ffe0dc}
