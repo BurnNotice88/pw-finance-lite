@@ -7,16 +7,10 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <aside class="sidebar">
-    <div class="logo">P&amp;W Finance</div>
-    <nav>
-      <a data-route="overview" class="active">Overview</a>
-      <a data-route="wallace">Wallace</a>
-      <a data-route="patricia">Patricia</a>
-      <a data-route="gemeinsam">Gemeinsam</a>
-      <a data-route="einstellungen">Einstellungen</a>
-    </nav>
-  </aside>
+  <header class="topbar">
+    <div class="brand">P&W Finance</div>
+  </header>
+
   <main class="content">
     <section id="view-overview" class="view"></section>
     <section id="view-wallace" class="view" hidden></section>
@@ -24,6 +18,16 @@
     <section id="view-gemeinsam" class="view" hidden></section>
     <section id="view-einstellungen" class="view" hidden></section>
   </main>
+
+  <!-- Bottom Tabs (UBS-Style) -->
+  <nav class="tabs">
+    <button data-route="overview" class="active" aria-label="Home">Home</button>
+    <button data-route="wallace"  aria-label="Wallace">Wallace</button>
+    <button data-route="patricia" aria-label="Patricia">Patricia</button>
+    <button data-route="gemeinsam" aria-label="Gemeinsam">Gemeinsam</button>
+    <button data-route="einstellungen" aria-label="Einstellungen">Mehr</button>
+  </nav>
+
   <script src="app.js"></script>
 </body>
 </html>
