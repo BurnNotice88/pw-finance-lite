@@ -3,125 +3,112 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>FAINANCE</title>
+  <title>FAINANCE®</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Header / Branding -->
+  <!-- Header: nur Text, kein Bild -->
   <header class="app-header">
-    <div class="brand">
-      <img src="./logo-fainance.png" alt="FAINANCE" class="brand-logo" />
-      <span class="brand-text">FAINANCE<sup>®</sup></span>
-    </div>
+    <div class="brand">FAINANCE<sup>®</sup></div>
   </header>
 
-  <!-- Seitencontainer -->
-  <main id="pages">
-
+  <main class="app-main">
     <!-- HOME -->
-    <section id="page-home" class="page page--active" aria-labelledby="home-title">
-      <div class="page-inner">
-        <h1 id="home-title" class="h1">Übersicht</h1>
+    <section id="view-home" class="view is-active" aria-labelledby="home-title" role="region">
+      <h1 id="home-title" class="title">Übersicht</h1>
 
-        <article class="card">
-          <header class="card-title">
-            <strong>Wallace</strong> – Einnahmen
-            <span class="card-value">CHF 5’550.00</span>
-          </header>
-          <div class="card-row">
-            <span>Ausgaben</span>
-            <span class="card-value">CHF 2’360.00</span>
-          </div>
-          <footer class="card-balance">
-            <span>Bilanz</span>
-            <span class="balance-positive">CHF 3’190.00</span>
-          </footer>
-        </article>
+      <div id="home-cards" class="cards"></div>
 
-        <article class="card">
-          <header class="card-title">
-            <strong>Patricia</strong> – Einnahmen
-            <span class="card-value">CHF 5’200.00</span>
-          </header>
-          <div class="card-row">
-            <span>Ausgaben</span>
-            <span class="card-value">CHF 2’220.00</span>
-          </div>
-          <footer class="card-balance">
-            <span>Bilanz</span>
-            <span class="balance-positive">CHF 2’980.00</span>
-          </footer>
-        </article>
-
-        <article class="card">
-          <header class="card-title">
-            <strong>Gemeinsam</strong> – Einnahmen
-            <span class="card-value">CHF 10’750.00</span>
-          </header>
-          <div class="card-row">
-            <span>Ausgaben</span>
-            <span class="card-value">CHF 4’580.00</span>
-          </div>
-          <footer class="card-balance">
-            <span>Bilanz</span>
-            <span class="balance-positive">CHF 6’170.00</span>
-          </footer>
-        </article>
-
-        <article class="card">
-          <header class="card-title">
-            Monatsverlauf (Bilanz)
-          </header>
-          <div class="chart-placeholder">
-            Beispieldaten – können wir später aus Firestore füttern.
-          </div>
-        </article>
-      </div>
+      <section class="card chart-card">
+        <h2 class="subtitle">Monatsverlauf (Bilanz, Beispiel)</h2>
+        <canvas id="chart-balance" aria-label="Balkendiagramm Bilanz" role="img"></canvas>
+        <p class="chart-caption">Beispieldaten – echte Werte können wir später einlesen.</p>
+      </section>
     </section>
 
     <!-- WALLACE -->
-    <section id="page-wallace" class="page" aria-labelledby="wallace-title">
-      <div class="page-inner">
-        <h1 id="wallace-title" class="h1">Wallace</h1>
-        <article class="card"><header class="card-title">Wallace-Inhalte …</header></article>
+    <section id="view-wallace" class="view" aria-labelledby="w-title" role="region">
+      <h1 id="w-title" class="title">Wallace</h1>
+      <div class="card form-card">
+        <div class="field">
+          <label for="w-income">Einnahmen (CHF)</label>
+          <input id="w-income" type="number" inputmode="decimal" step="0.05" />
+        </div>
+        <div class="field">
+          <label for="w-expense">Ausgaben (CHF)</label>
+          <input id="w-expense" type="number" inputmode="decimal" step="0.05" />
+        </div>
+        <button id="w-save" class="btn primary">Speichern</button>
       </div>
+      <div id="w-summary" class="card"></div>
     </section>
 
     <!-- PATRICIA -->
-    <section id="page-patricia" class="page" aria-labelledby="patricia-title">
-      <div class="page-inner">
-        <h1 id="patricia-title" class="h1">Patricia</h1>
-        <article class="card"><header class="card-title">Patricia-Inhalte …</header></article>
+    <section id="view-patricia" class="view" aria-labelledby="p-title" role="region">
+      <h1 id="p-title" class="title">Patricia</h1>
+      <div class="card form-card">
+        <div class="field">
+          <label for="p-income">Einnahmen (CHF)</label>
+          <input id="p-income" type="number" inputmode="decimal" step="0.05" />
+        </div>
+        <div class="field">
+          <label for="p-expense">Ausgaben (CHF)</label>
+          <input id="p-expense" type="number" inputmode="decimal" step="0.05" />
+        </div>
+        <button id="p-save" class="btn primary">Speichern</button>
       </div>
+      <div id="p-summary" class="card"></div>
     </section>
 
     <!-- GEMEINSAM -->
-    <section id="page-gemeinsam" class="page" aria-labelledby="gemeinsam-title">
-      <div class="page-inner">
-        <h1 id="gemeinsam-title" class="h1">Gemeinsam</h1>
-        <article class="card"><header class="card-title">Gemeinsame Inhalte …</header></article>
+    <section id="view-gemeinsam" class="view" aria-labelledby="g-title" role="region">
+      <h1 id="g-title" class="title">Gemeinsam</h1>
+      <div class="card form-card">
+        <div class="field">
+          <label for="g-income">Einnahmen (CHF)</label>
+          <input id="g-income" type="number" inputmode="decimal" step="0.05" />
+        </div>
+        <div class="field">
+          <label for="g-expense">Ausgaben (CHF)</label>
+          <input id="g-expense" type="number" inputmode="decimal" step="0.05" />
+        </div>
+        <button id="g-save" class="btn primary">Speichern</button>
       </div>
+      <div id="g-summary" class="card"></div>
     </section>
 
     <!-- MEHR -->
-    <section id="page-mehr" class="page" aria-labelledby="mehr-title">
-      <div class="page-inner">
-        <h1 id="mehr-title" class="h1">Mehr</h1>
-        <article class="card"><header class="card-title">Einstellungen / Login / Export …</header></article>
+    <section id="view-mehr" class="view" aria-labelledby="more-title" role="region">
+      <h1 id="more-title" class="title">Mehr</h1>
+
+      <div class="card">
+        <h2 class="subtitle">Daten exportieren / importieren</h2>
+        <div class="btn-row">
+          <button id="btn-export" class="btn">Export (Datei)</button>
+          <button id="btn-copy" class="btn">Export (Zwischenablage)</button>
+        </div>
+        <div class="field">
+          <label for="import-text">Import (JSON einfügen)</label>
+          <textarea id="import-text" rows="4" placeholder='{"wallace":{"income":0,"expense":0}, ...}'></textarea>
+        </div>
+        <div class="btn-row">
+          <button id="btn-import" class="btn primary">Import anwenden</button>
+          <button id="btn-clear" class="btn danger">Alle lokalen Daten löschen</button>
+        </div>
+        <p class="hint">Hinweis: Aktuell werden Daten lokal auf diesem Gerät gespeichert. Für Sync zwischen Geräten aktivieren wir später wieder Cloud-Speicher.</p>
       </div>
     </section>
-
   </main>
 
-  <!-- Tabbar -->
-  <nav class="tabbar" aria-label="Hauptnavigation">
-    <button class="tabbar-btn tabbar-btn--active" data-target="home">Home</button>
-    <button class="tabbar-btn" data-target="wallace">Wallace</button>
-    <button class="tabbar-btn" data-target="patricia">Patricia</button>
-    <button class="tabbar-btn" data-target="gemeinsam">Gemeinsam</button>
-    <button class="tabbar-btn" data-target="mehr">Mehr</button>
+  <!-- Tabs unten -->
+  <nav class="tabbar" role="tablist" aria-label="Navigation">
+    <button class="tab is-active" data-target="home"    role="tab" aria-selected="true">Home</button>
+    <button class="tab"           data-target="wallace" role="tab" aria-selected="false">Wallace</button>
+    <button class="tab"           data-target="patricia"role="tab" aria-selected="false">Patricia</button>
+    <button class="tab"           data-target="gemeinsam"role="tab" aria-selected="false">Gemeinsam</button>
+    <button class="tab"           data-target="mehr"    role="tab" aria-selected="false">Mehr</button>
   </nav>
 
-  <script src="app.js"></script>
+  <script src="app.js" defer></script>
 </body>
 </html>
