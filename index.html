@@ -1,120 +1,176 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FAINANCE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>FAINANCE®</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Header -->
-  <header class="topbar">
-    <div class="brand">
-      F<span class="ai">AI</span>NANCE<span class="reg">®</span>
+  <div id="app">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <h1 class="title">
+          <span class="tight">F</span><strong>AI</strong><span class="tight">NANCE</span><sup>®</sup>
+        </h1>
+      </div>
+    </header>
+
+    <!-- Monat-Auswahl (sticky unter Header) -->
+    <div class="monthbar">
+      <label for="monthSelect" class="sr-only">Monat wählen</label>
+      <div class="monthbar-inner">
+        <button id="prevMonth" class="icon-btn" aria-label="Voriger Monat">‹</button>
+        <select id="monthSelect" class="month-select" aria-label="Monat wählen"></select>
+        <button id="nextMonth" class="icon-btn" aria-label="Nächster Monat">›</button>
+      </div>
     </div>
-    <div class="spacer"></div>
-  </header>
 
-  <!-- Inhalt -->
-  <main id="app" class="content">
-    <!-- Home -->
-    <section id="view-home" class="view view--active" aria-labelledby="tab-home">
-      <h1 class="h1">Übersicht</h1>
-      <div class="card">
-        <div class="card-title">Wallace – Einnahmen</div>
-        <div class="card-value">CHF 0.00</div>
-      </div>
-      <div class="card">
-        <div class="card-title">Wallace – Ausgaben</div>
-        <div class="card-value">CHF 0.00</div>
-      </div>
-      <div class="card">
-        <div class="card-title">Bilanz</div>
-        <div class="card-value good">CHF 0.00</div>
-      </div>
-    </section>
+    <!-- Login (nur sichtbar, wenn nicht angemeldet – Platzhalter für später) -->
+    <main id="login-screen" class="screen hidden">
+      <section class="card">
+        <h2>Anmelden</h2>
+        <p class="muted">Einmal einloggen, danach automatisch eingeloggt auf diesem Gerät.</p>
+        <div class="form">
+          <label>E-Mail
+            <input type="email" id="email" inputmode="email" autocomplete="username" placeholder="name@domain.ch" />
+          </label>
+          <label>Passwort
+            <input type="password" id="password" autocomplete="current-password" placeholder="********" />
+          </label>
+          <button id="btn-login" class="btn primary">Anmelden</button>
+          <p id="login-error" class="error hidden"></p>
+        </div>
+      </section>
+    </main>
 
-    <!-- Wallace -->
-    <section id="view-wallace" class="view" aria-labelledby="tab-wallace">
-      <h1 class="h1">Wallace</h1>
-      <div class="card"><div class="card-title">Einnahmen</div><div class="card-value">CHF 0.00</div></div>
-      <div class="card"><div class="card-title">Ausgaben</div><div class="card-value">CHF 0.00</div></div>
-    </section>
+    <!-- App-Inhalt (sichtbar im angemeldeten Zustand oder lokal) -->
+    <main id="app-screen" class="screen">
+      <!-- Dashboard -->
+      <section id="view-dashboard" class="view active">
+        <div class="card">
+          <h2>Bilanz aktuell (Monat)</h2>
+          <div class="row spread total">
+            <span>Gesamt</span><span id="sum-balance" class="money positive">CHF 0.00</span>
+          </div>
+        </div>
 
-    <!-- Patricia -->
-    <section id="view-patricia" class="view" aria-labelledby="tab-patricia">
-      <h1 class="h1">Patricia</h1>
-      <div class="card"><div class="card-title">Einnahmen</div><div class="card-value">CHF 0.00</div></div>
-      <div class="card"><div class="card-title">Ausgaben</div><div class="card-value">CHF 0.00</div></div>
-    </section>
+        <div class="card">
+          <div class="card-head">
+            <h3>Wallace</h3><span class="badge" id="badge-w">IST</span>
+          </div>
+          <div class="rows">
+            <div class="row spread"><span>Einnahmen</span><span id="w-income" class="money">CHF 0.00</span></div>
+            <div class="row spread"><span>Ausgaben</span><span id="w-expense" class="money">CHF 0.00</span></div>
+            <div class="divider"></div>
+            <div class="row spread strong"><span>Bilanz</span><span id="w-balance" class="money">CHF 0.00</span></div>
+          </div>
+        </div>
 
-    <!-- Gemeinsam -->
-    <section id="view-gemeinsam" class="view" aria-labelledby="tab-gemeinsam">
-      <h1 class="h1">Gemeinsam</h1>
-      <div class="card"><div class="card-title">Einnahmen</div><div class="card-value">CHF 0.00</div></div>
-      <div class="card"><div class="card-title">Ausgaben</div><div class="card-value">CHF 0.00</div></div>
-    </section>
+        <div class="card">
+          <div class="card-head">
+            <h3>Patricia</h3><span class="badge" id="badge-p">IST</span>
+          </div>
+          <div class="rows">
+            <div class="row spread"><span>Einnahmen</span><span id="p-income" class="money">CHF 0.00</span></div>
+            <div class="row spread"><span>Ausgaben</span><span id="p-expense" class="money">CHF 0.00</span></div>
+            <div class="divider"></div>
+            <div class="row spread strong"><span>Bilanz</span><span id="p-balance" class="money">CHF 0.00</span></div>
+          </div>
+        </div>
 
-    <!-- Einstellungen -->
-    <section id="view-settings" class="view" aria-labelledby="tab-settings">
-      <h1 class="h1">Einstellungen</h1>
-      <div class="card">
-        <div class="card-title">Monatliche Werte bearbeiten</div>
-        <div class="muted">Hier kommen deine Inputs hin …</div>
-      </div>
-    </section>
-  </main>
+        <div class="card">
+          <div class="card-head">
+            <h3>Gemeinsam</h3><span class="badge" id="badge-s">IST</span>
+          </div>
+          <div class="rows">
+            <div class="row spread"><span>Einnahmen</span><span id="s-income" class="money">CHF 0.00</span></div>
+            <div class="row spread"><span>Ausgaben</span><span id="s-expense" class="money">CHF 0.00</span></div>
+            <div class="divider"></div>
+            <div class="row spread strong"><span>Bilanz</span><span id="s-balance" class="money">CHF 0.00</span></div>
+          </div>
+        </div>
 
-  <!-- Bottom Nav (UBS-Style: Icon + Text, aktiv rot) -->
-  <nav class="tabbar" role="tablist" aria-label="Navigation">
-    <button id="tab-home" class="tab tab--active" role="tab" aria-controls="view-home" aria-selected="true" data-target="home">
-      <!-- Home Icon -->
-      <svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M3 10.5L12 4l9 6.5v8a1.5 1.5 0 0 1-1.5 1.5H4.5A1.5 1.5 0 0 1 3 18.5v-8z" fill="none" stroke="currentColor" stroke-width="2" />
-        <path d="M9 20v-6h6v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      <span class="tab-label">Home</span>
-    </button>
+        <div class="card">
+          <div class="card-head">
+            <h3>Schulden</h3>
+          </div>
+          <div class="rows">
+            <div class="row spread"><span>Wallace</span><span id="debt-w" class="money">CHF 0.00</span></div>
+            <div class="row spread"><span>Patricia</span><span id="debt-p" class="money">CHF 0.00</span></div>
+            <div class="divider"></div>
+            <div class="row spread total"><span>Total</span><span id="debt-total" class="money">CHF 0.00</span></div>
+          </div>
+        </div>
+      </section>
 
-    <button id="tab-wallace" class="tab" role="tab" aria-controls="view-wallace" aria-selected="false" data-target="wallace">
-      <!-- Person Icon -->
-      <svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
-        <path d="M4 20a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      <span class="tab-label">Wallace</span>
-    </button>
+      <!-- Wallace -->
+      <section id="view-wallace" class="view">
+        <div class="card"><h2>Wallace</h2></div>
+      </section>
 
-    <button id="tab-patricia" class="tab" role="tab" aria-controls="view-patricia" aria-selected="false" data-target="patricia">
-      <!-- Person Icon (zweite) -->
-      <svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
-        <path d="M4 20a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      <span class="tab-label">Patricia</span>
-    </button>
+      <!-- Patricia -->
+      <section id="view-patricia" class="view">
+        <div class="card"><h2>Patricia</h2></div>
+      </section>
 
-    <button id="tab-gemeinsam" class="tab" role="tab" aria-controls="view-gemeinsam" aria-selected="false" data-target="gemeinsam">
-      <!-- Group Icon -->
-      <svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
-        <circle cx="16" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
-        <path d="M3 20a6 6 0 0 1 10-4M21 20a6 6 0 0 0-10-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      <span class="tab-label">Gemeinsam</span>
-    </button>
+      <!-- Gemeinsam -->
+      <section id="view-shared" class="view">
+        <div class="card"><h2>Gemeinsam</h2></div>
+      </section>
 
-    <button id="tab-settings" class="tab" role="tab" aria-controls="view-settings" aria-selected="false" data-target="settings">
-      <!-- More/Settings Icon -->
-      <svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="5" cy="12" r="2" fill="currentColor"/>
-        <circle cx="12" cy="12" r="2" fill="currentColor"/>
-        <circle cx="19" cy="12" r="2" fill="currentColor"/>
-      </svg>
-      <span class="tab-label">Einstellungen</span>
-    </button>
-  </nav>
+      <!-- Einstellungen -->
+      <section id="view-settings" class="view">
+        <div class="card">
+          <h2>Einstellungen</h2>
+          <div class="row spread muted"><span>Status</span><span id="whoami">–</span></div>
+        </div>
+      </section>
+    </main>
 
-  <script src="app.js"></script>
+    <!-- Tabbar: NUR Navigation neu, Rest unverändert -->
+    <nav class="tabbar" aria-label="Navigation">
+      <button class="tab active" data-target="dashboard" aria-label="Dashboard">
+        <svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 10.5L12 4l9 6.5v8a1.5 1.5 0 0 1-1.5 1.5H4.5A1.5 1.5 0 0 1 3 18.5v-8z" fill="none" stroke="currentColor" stroke-width="2" />
+          <path d="M9 20v-6h6v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>Home</span>
+      </button>
+      <button class="tab" data-target="wallace" aria-label="Wallace">
+        <svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M4 20a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>Wallace</span>
+      </button>
+      <button class="tab" data-target="patricia" aria-label="Patricia">
+        <svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M4 20a8 8 0 0 1 16 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>Patricia</span>
+      </button>
+      <button class="tab" data-target="shared" aria-label="Gemeinsam">
+        <svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
+          <circle cx="16" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="2"/>
+          <path d="M3 20a6 6 0 0 1 10-4M21 20a6 6 0 0 0-10-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>Gemeinsam</span>
+      </button>
+      <button class="tab" data-target="settings" aria-label="Einstellungen">
+        <svg class="tab-ic" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="5" cy="12" r="2" fill="currentColor"/>
+          <circle cx="12" cy="12" r="2" fill="currentColor"/>
+          <circle cx="19" cy="12" r="2" fill="currentColor"/>
+        </svg>
+        <span>Einstellungen</span>
+      </button>
+    </nav>
+  </div>
+
+  <script src="app.js" type="module"></script>
 </body>
 </html>
