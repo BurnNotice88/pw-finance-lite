@@ -1,88 +1,73 @@
-/* ==== UBS-Style Light Theme, kompakt ==== */
 :root{
-  --bg:#f6f7f8;
+  --bg:#f5f7f8;
   --card:#ffffff;
-  --line:#e7e8ea;
-  --text:#121314;
-  --muted:#6b7177;
-  --red:#e00024;
-  --red-weak:#ffedf0;
-  --ok:#198754;
-  --bad:#c1121f;
-  --shadow:0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.06);
+  --text:#0b0d10;
+  --muted:#6b7280;
+  --green:#10b981;
+  --red:#d12d26;
+  --line:#e8eaee;
+  --accent:#ef4444; /* dunkleres UBS-Rot */
 }
 
 *{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,Inter,Segoe UI,Roboto,Arial,sans-serif;
-  color:var(--text);
-  background:var(--bg);
-}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font:16px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,system-ui,Arial}
+.hidden{display:none}
 
-/* Topbar */
 .topbar{
-  position:sticky; top:0; z-index:5;
-  height:52px; display:flex; align-items:center; gap:10px;
-  padding:0 16px; background:#fff; border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:10;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 18px;background:#fff;border-bottom:1px solid var(--line)
 }
-.brand{font-weight:600; letter-spacing:.2px}
+.brand .logo{font-weight:800;font-size:22px}
+.logo-accent{color:var(--accent);font-weight:900}
 
-/* Content */
-.content{padding:12px 12px 78px; max-width:1000px; margin:0 auto;}
-h1{margin:0 0 10px; font-size:20px}
+.user-badge{display:flex;gap:8px;align-items:center}
+.user-badge span{color:var(--muted);font-size:14px}
 
-/* Cards */
+main{padding:16px 12px 86px}
+
+.section>h2{margin:8px 4px 12px;font-size:26px}
 .card{
-  background:var(--card); border:1px solid var(--line);
-  border-radius:14px; box-shadow:var(--shadow); padding:12px; margin-bottom:10px;
+  background:var(--card);border:1px solid var(--line);border-radius:14px;
+  padding:12px 14px;margin:12px 2px;box-shadow:0 1px 0 rgba(0,0,0,.02)
 }
-.grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
-@media (max-width:840px){.grid-3{grid-template-columns:1fr 1fr}}
-@media (max-width:560px){.grid-3{grid-template-columns:1fr}}
+.card.soft{background:#fafbfc}
+.card-title{font-weight:700;font-size:18px;margin-bottom:4px}
 
-.row{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--line)}
-.row:last-child{border-bottom:none}
-.total{margin-top:6px; padding-top:6px; border-top:1px solid var(--line)}
-.total.pos b{color:var(--ok)}
-.total.neg b{color:var(--bad)}
+.row{display:flex;align-items:center;justify-content:space-between;padding:10px 4px}
+.line{border-bottom:1px solid var(--line)}
+.pos{color:var(--green)} .neg{color:var(--red)}
 
-/* Tabellen kompakt */
-table{width:100%; border-collapse:collapse}
-th,td{padding:8px 6px; border-bottom:1px solid var(--line)}
-th{color:var(--muted); font-weight:600; font-size:12.5px}
-td{font-size:14px}
-td.num,th.num{text-align:right; font-variant-numeric:tabular-nums}
-
-/* 2 Spalten */
-.two-col{display:grid; grid-template-columns:1fr 1fr; gap:10px}
-@media (max-width:840px){.two-col{grid-template-columns:1fr}}
-
-/* Formulare */
-.form .flex{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-@media (max-width:840px){.form .flex{grid-template-columns:1fr}}
-.form .rows{display:flex; flex-direction:column; gap:6px}
-.form .form-row{display:grid; grid-template-columns:2fr 1fr; gap:6px}
-.form input[type="text"], .form input[type="number"]{
-  width:100%; padding:10px 12px; background:#fff; border:1px solid var(--line);
-  border-radius:10px; color:var(--text);
+.field{display:flex;flex-direction:column;gap:6px}
+.field input{
+  padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff
 }
-.actions{margin-top:8px; display:flex; justify-content:flex-end}
-.actions button{
-  background:var(--red); color:#fff; border:none; padding:10px 14px; border-radius:10px; font-weight:600;
-}
-.actions button:active{transform:translateY(1px)}
-.flash{margin-bottom:10px}
-.flash .msg{padding:10px 12px; border-radius:10px; background:var(--red-weak); border:1px solid #ffd1d7}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
 
-/* Bottom Tabs (UBS-Style) */
+.btn{
+  border:1px solid var(--line);background:#fff;border-radius:10px;
+  padding:10px 14px;font-weight:600
+}
+.btn.small{padding:8px 10px;font-size:14px}
+.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+.btn.ghost{background:#fff;color:var(--muted)}
+
+.auth{max-width:520px;margin:18px auto}
+.hint{color:var(--muted);font-size:13px}
+.msg{margin-top:8px;color:var(--red)}
+
+.edit summary{cursor:pointer;margin-top:8px;color:var(--muted)}
+.placeholder{
+  height:120px;border:2px dashed var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;color:var(--muted)
+}
+
+/* Bottom Tabs */
 .tabs{
-  position:fixed; left:0; right:0; bottom:0; height:60px; background:#fff;
-  border-top:1px solid var(--line); display:grid; grid-template-columns:repeat(5,1fr); gap:0; z-index:10;
+  position:fixed;left:0;right:0;bottom:0;z-index:5;
+  display:flex;gap:6px;justify-content:space-around;
+  background:#fff;border-top:1px solid var(--line);padding:8px 6px
 }
-.tabs button{
-  appearance:none; border:none; background:transparent; padding:6px 4px; font-size:12.5px; color:var(--muted);
+.tab{
+  flex:1;background:#fff;border:0;padding:10px 6px;border-radius:10px;font-weight:600;color:#9ca3af
 }
-.tabs button.active{color:var(--red); font-weight:700}
-.tabs button:active{opacity:.6}
+.tab.active{color:var(--accent)}
