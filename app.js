@@ -1,4 +1,4 @@
-// === Daten / Utils ===
+// ==== Daten + Utils ====
 const DEFAULTS = {
   currency: "CHF",
   wallace: {
@@ -11,13 +11,13 @@ const DEFAULTS = {
   }
 };
 const KEY = "pw_finance_lite_settings";
-const load = ()=>JSON.parse(localStorage.getItem(KEY) || JSON.stringify(DEFAULTS));
-const save = (cfg)=>localStorage.setItem(KEY, JSON.stringify(cfg));
+const load = () => JSON.parse(localStorage.getItem(KEY) || JSON.stringify(DEFAULTS));
+const save = (cfg) => localStorage.setItem(KEY, JSON.stringify(cfg));
 const chf = n => (Number(n)||0).toLocaleString("de-CH",{minimumFractionDigits:2,maximumFractionDigits:2})+" CHF";
 const sum = list => list.reduce((a,b)=>a+(Number(b.amount)||0),0);
 const totals = b => ({inc:sum(b.income), exp:sum(b.expenses), bal:sum(b.income)-sum(b.expenses)});
 
-// === Render ===
+// ==== Render ====
 function renderOverview(cfg){
   const w = totals(cfg.wallace), p = totals(cfg.patricia);
   const g = {inc:w.inc+p.inc, exp:w.exp+p.exp, bal:(w.inc+p.inc)-(w.exp+p.exp)};
@@ -41,6 +41,7 @@ function renderOverview(cfg){
     </div>
   </div>`;
 }
+
 function renderPerson(name, data){
   const rows = list => list.map(r=>`<tr><td>${r.label||"—"}</td><td class="num">${(Number(r.amount)||0).toFixed(2)}</td></tr>`).join("");
   return `
@@ -60,17 +61,14 @@ function renderPerson(name, data){
     </div>
   </div>`;
 }
+
 function renderSettings(cfg){
-  // Hilfsfunktion: generiert kompakte Eingabereihen
-  const block = (prefix, arr)=>[
-    ...arr.map(r=>row(prefix, r.label, r.amount)),
-    row(prefix,"", ""), row(prefix,"","")
-  ].join("");
   const row = (p,lbl,amt)=>`
     <div class="form-row">
       <input type="text"  name="${p}_label"  value="${lbl||""}" placeholder="Bezeichnung">
       <input type="number" step="0.01" name="${p}_amount" value="${amt!==""?(Number(amt)||0).toFixed(2):""}" placeholder="Betrag (CHF)">
     </div>`;
+  const block = (prefix, arr)=>[...arr.map(r=>row(prefix,r.label,r.amount)), row(prefix,"",""), row(prefix,"","")].join("");
   return `
   <h1>Einstellungen</h1>
   <div class="flash"><div class="msg" id="saveMsg" style="display:none">Gespeichert.</div></div>
@@ -89,69 +87,49 @@ function renderSettings(cfg){
   </form>`;
 }
 
-// === Helpers für Formular ===
 function collectRows(container){
   const labels  = [...container.querySelectorAll('input[name$="_label"]')].map(i=>i.value.trim());
   const amounts = [...container.querySelectorAll('input[name$="_amount"]')].map(i=>Number((i.value||"").replace(",", "."))||0);
-  const out = [];
-  for(let i=0;i<labels.length;i++){
-    if(!labels[i] && !amounts[i]) continue;
-    out.push({label:labels[i]||"—", amount:amounts[i]});
-  }
+  const out=[]; for(let i=0;i<labels.length;i++){ if(!labels[i] && !amounts[i]) continue; out.push({label:labels[i]||"—", amount:amounts[i]}); }
   return out;
 }
 
-// === App Mount & Router (Bottom Tabs) ===
+// ==== App Mount + Tabs ====
 function mount(){
   let cfg = load();
 
-  // Initial render
-  document.querySelector("#view-overview").innerHTML = renderOverview(cfg);
-  document.querySelector("#view-wallace").innerHTML = renderPerson("Wallace", cfg.wallace);
-  document.querySelector("#view-patricia").innerHTML = renderPerson("Patricia", cfg.patricia);
-  document.querySelector("#view-gemeinsam").innerHTML = renderPerson("Gemeinsam", {income:[...cfg.wallace.income,...cfg.patricia.income], expenses:[...cfg.wallace.expenses,...cfg.patricia.expenses]});
-  document.querySelector("#view-einstellungen").innerHTML = renderSettings(cfg);
-
-  // Save handler (sofortige Aktualisierung aller Views)
-  const form = document.querySelector("#settingsForm");
-  form.addEventListener("submit", e=>{
-    e.preventDefault();
-    const next = {
-      currency:"CHF",
-      wallace:{
-        income:  collectRows(document.getElementById("rows_w_income")),
-        expenses:collectRows(document.getElementById("rows_w_expenses"))
-      },
-      patricia:{
-        income:  collectRows(document.getElementById("rows_p_income")),
-        expenses:collectRows(document.getElementById("rows_p_expenses"))
-      }
-    };
-    save(next);
-    cfg = next;
-
-    // Re-render alle Seiten kompakt
+  const renderAll = ()=>{
     document.querySelector("#view-overview").innerHTML = renderOverview(cfg);
     document.querySelector("#view-wallace").innerHTML = renderPerson("Wallace", cfg.wallace);
     document.querySelector("#view-patricia").innerHTML = renderPerson("Patricia", cfg.patricia);
-    document.querySelector("#view-gemeinsam").innerHTML = renderPerson("Gemeinsam", {income:[...cfg.wallace.income,...cfg.patricia.income], expenses:[...cfg.wallace.expenses,...cfg.patricia.expenses]});
+    document.querySelector("#view-gemeinsam").innerHTML = renderPerson("Gemeinsam", {
+      income:[...cfg.wallace.income, ...cfg.patricia.income],
+      expenses:[...cfg.wallace.expenses, ...cfg.patricia.expenses]
+    });
     document.querySelector("#view-einstellungen").innerHTML = renderSettings(cfg);
 
-    // Flash
-    const msg = document.getElementById("saveMsg"); if(msg){ msg.style.display="block"; setTimeout(()=>msg.style.display="none",1200); }
+    // Save-Handler neu binden
+    const form = document.querySelector("#settingsForm");
+    form.addEventListener("submit",(e)=>{
+      e.preventDefault();
+      const next = {
+        currency:"CHF",
+        wallace:{
+          income:  collectRows(document.getElementById("rows_w_income")),
+          expenses:collectRows(document.getElementById("rows_w_expenses"))
+        },
+        patricia:{
+          income:  collectRows(document.getElementById("rows_p_income")),
+          expenses:collectRows(document.getElementById("rows_p_expenses"))
+        }
+      };
+      save(next); cfg = next; renderAll();
+      const msg = document.getElementById("saveMsg"); if(msg){ msg.style.display="block"; setTimeout(()=>msg.style.display="none",1200); }
+    }, {once:true});
+  };
 
-    // Reattach handler (weil Settings neu gerendert)
-    mountSettingsHandler();
-  });
+  renderAll();
 
-  function mountSettingsHandler(){
-    const f = document.getElementById("settingsForm");
-    if(!f) return;
-    f.addEventListener("submit", e=>e.preventDefault(), {once:true}); // oben bereits gebunden
-  }
-  mountSettingsHandler();
-
-  // Router für Bottom Tabs
   const buttons = document.querySelectorAll(".tabs button");
   const show = route=>{
     buttons.forEach(b=>b.classList.toggle("active", b.dataset.route===route));
