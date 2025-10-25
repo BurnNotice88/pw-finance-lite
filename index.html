@@ -2,128 +2,100 @@
 <html lang="de">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>FAINANCE</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Header -->
-  <header class="app-header">
-    <div class="brand-wrap">
-      <!-- Logo-Datei liegt im Repo-Root -->
-      <img src="IMG_4855.png" alt="FAINANCE Logo" class="brand-logo" />
-      <h1 class="brand">
-        F<span class="brand-ai">AI</span>NANCE<span class="reg">&reg;</span>
-      </h1>
+  <!-- Header mit kleinem Logo links -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <img src="IMG_4855.png" alt="FAINANCE Logo" class="logo" />
     </div>
+
+    <!-- Monatswahl zentriert -->
+    <div class="month-selector" aria-label="Monat wählen">
+      <button id="prevMonth" class="icon-btn" aria-label="Vorheriger Monat" type="button">‹</button>
+      <div class="month-pill">
+        <span id="monthLabel" class="month-label">—</span>
+      </div>
+      <button id="nextMonth" class="icon-btn" aria-label="Nächster Monat" type="button">›</button>
+    </div>
+
+    <div class="topbar-right"><!-- leer (bewusst) --></div>
   </header>
 
-  <!-- Monats-Navigation -->
-  <section class="month-bar">
-    <button class="month-btn" id="monthPrev" aria-label="Vorheriger Monat">‹</button>
-    <div class="month-pill" id="monthLabel" role="button" aria-label="Aktueller Monat"></div>
-    <button class="month-btn" id="monthNext" aria-label="Nächster Monat">›</button>
-  </section>
-
-  <!-- Inhalt -->
-  <main id="viewContainer">
-    <!-- Home -->
-    <section class="view view--active" id="view-home" aria-labelledby="tab-home">
+  <main id="view-container">
+    <!-- Home (Dashboard) -->
+    <section id="view-home" class="view active">
+      <div class="section-title">Bilanz aktuell (Monat)</div>
       <div class="card">
-        <div class="card-title">Bilanz aktuell (Monat)</div>
         <div class="row">
-          <span>Gesamt</span>
-          <strong class="money" id="sum-total">CHF 0.00</strong>
+          <div>Gesamt</div>
+          <div id="sumBalance" class="amount pos">CHF 0.00</div>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title with-badge">
-          <span>Wallace</span>
-          <span class="badge">IST</span>
+        <div class="card-header">
+          <h3>Wallace</h3><span class="badge">IST</span>
         </div>
-        <div class="row"><span>Einnahmen</span><strong class="money">CHF 0.00</strong></div>
-        <div class="row"><span>Ausgaben</span><strong class="money">CHF 0.00</strong></div>
-        <div class="row total"><span>Bilanz</span><strong class="money">CHF 0.00</strong></div>
+        <div class="row"><div>Einnahmen</div><div id="wInc" class="amount">CHF 0.00</div></div>
+        <div class="row"><div>Ausgaben</div><div id="wExp" class="amount">CHF 0.00</div></div>
+        <div class="row strong"><div>Bilanz</div><div id="wBal" class="amount">CHF 0.00</div></div>
       </div>
 
       <div class="card">
-        <div class="card-title with-badge">
-          <span>Patricia</span>
-          <span class="badge">IST</span>
+        <div class="card-header">
+          <h3>Patricia</h3><span class="badge">IST</span>
         </div>
-        <div class="row"><span>Einnahmen</span><strong class="money">CHF 0.00</strong></div>
-        <div class="row"><span>Ausgaben</span><strong class="money">CHF 0.00</strong></div>
-        <div class="row total"><span>Bilanz</span><strong class="money">CHF 0.00</strong></div>
+        <div class="row"><div>Einnahmen</div><div id="pInc" class="amount">CHF 0.00</div></div>
+        <div class="row"><div>Ausgaben</div><div id="pExp" class="amount">CHF 0.00</div></div>
+        <div class="row strong"><div>Bilanz</div><div id="pBal" class="amount">CHF 0.00</div></div>
       </div>
 
       <div class="card">
-        <div class="card-title with-badge">
-          <span>Gemeinsam</span>
-          <span class="badge">IST</span>
+        <div class="card-header">
+          <h3>Gemeinsam</h3><span class="badge">IST</span>
         </div>
-        <div class="row"><span>Einnahmen</span><strong class="money">CHF 0.00</strong></div>
-        <div class="row"><span>Ausgaben</span><strong class="money">CHF 0.00</strong></div>
-        <div class="row total"><span>Bilanz</span><strong class="money">CHF 0.00</strong></div>
+        <div class="row"><div>Einnahmen</div><div id="gInc" class="amount">CHF 0.00</div></div>
+        <div class="row"><div>Ausgaben</div><div id="gExp" class="amount">CHF 0.00</div></div>
+        <div class="row strong"><div>Bilanz</div><div id="gBal" class="amount">CHF 0.00</div></div>
       </div>
     </section>
 
     <!-- Wallace -->
-    <section class="view" id="view-wallace" aria-labelledby="tab-wallace">
-      <div class="card">
-        <div class="card-title with-badge"><span>Wallace</span><span class="badge">IST</span></div>
-        <div class="row"><span>Einnahmen</span><strong class="money">CHF 0.00</strong></div>
-        <div class="row"><span>Ausgaben</span><strong class="money">CHF 0.00</strong></div>
-        <div class="row total"><span>Bilanz</span><strong class="money">CHF 0.00</strong></div>
-      </div>
+    <section id="view-wallace" class="view">
+      <div class="section-title">Wallace – Übersicht</div>
+      <div class="card muted"><p>Hier kommt Inhalt für Wallace …</p></div>
     </section>
 
     <!-- Patricia -->
-    <section class="view" id="view-patricia" aria-labelledby="tab-patricia">
-      <div class="card">
-        <div class="card-title with-badge"><span>Patricia</span><span class="badge">IST</span></div>
-        <div class="row"><span>Einnahmen</span><strong class="money">CHF 0.00</strong></div>
-        <div class="row"><span>Ausgaben</span><strong class="money">CHF 0.00</strong></div>
-        <div class="row total"><span>Bilanz</span><strong class="money">CHF 0.00</strong></div>
-      </div>
+    <section id="view-patricia" class="view">
+      <div class="section-title">Patricia – Übersicht</div>
+      <div class="card muted"><p>Hier kommt Inhalt für Patricia …</p></div>
     </section>
 
     <!-- Gemeinsam -->
-    <section class="view" id="view-gemeinsam" aria-labelledby="tab-gemeinsam">
-      <div class="card">
-        <div class="card-title with-badge"><span>Gemeinsam</span><span class="badge">IST</span></div>
-        <div class="row"><span>Einnahmen</span><strong class="money">CHF 0.00</strong></div>
-        <div class="row"><span>Ausgaben</span><strong class="money">CHF 0.00</strong></div>
-        <div class="row total"><span>Bilanz</span><strong class="money">CHF 0.00</strong></div>
-      </div>
+    <section id="view-gemeinsam" class="view">
+      <div class="section-title">Gemeinsam – Übersicht</div>
+      <div class="card muted"><p>Hier kommt Inhalt für „Gemeinsam“ …</p></div>
     </section>
 
-    <!-- Einstellungen (Platzhalter) -->
-    <section class="view" id="view-settings" aria-labelledby="tab-settings">
-      <div class="card">
-        <div class="card-title">Einstellungen</div>
-        <p>Hier kommen später Login, Daten-Speicherung etc.</p>
-      </div>
+    <!-- Einstellungen -->
+    <section id="view-settings" class="view">
+      <div class="section-title">Einstellungen</div>
+      <div class="card muted"><p>Hier bearbeitest du später alles – aktuell nur Platzhalter.</p></div>
     </section>
   </main>
 
-  <!-- Bottom Nav -->
-  <nav class="tabbar" role="tablist">
-    <button id="tab-home" class="tab tab--active" data-target="view-home" role="tab" aria-selected="true">
-      <span class="ico">🏠</span><span class="lbl">Home</span>
-    </button>
-    <button id="tab-wallace" class="tab" data-target="view-wallace" role="tab">
-      <span class="ico">🧍‍♂️</span><span class="lbl">Wallace</span>
-    </button>
-    <button id="tab-patricia" class="tab" data-target="view-patricia" role="tab">
-      <span class="ico">🧍‍♀️</span><span class="lbl">Patricia</span>
-    </button>
-    <button id="tab-gemeinsam" class="tab" data-target="view-gemeinsam" role="tab">
-      <span class="ico">👥</span><span class="lbl">Gemeinsam</span>
-    </button>
-    <button id="tab-settings" class="tab" data-target="view-settings" role="tab">
-      <span class="ico">⚙️</span><span class="lbl">Einstellungen</span>
-    </button>
+  <!-- Bottom Navigation (immer sichtbar) -->
+  <nav class="tabbar">
+    <button class="tab active" data-target="home"><span class="tab-ico">🏠</span><span>Home</span></button>
+    <button class="tab" data-target="wallace"><span class="tab-ico">👤</span><span>Wallace</span></button>
+    <button class="tab" data-target="patricia"><span class="tab-ico">👩🏼‍🦱</span><span>Patricia</span></button>
+    <button class="tab" data-target="gemeinsam"><span class="tab-ico">👥</span><span>Gemeinsam</span></button>
+    <button class="tab" data-target="settings"><span class="tab-ico">⚙️</span><span>Einstellungen</span></button>
   </nav>
 
   <script src="app.js"></script>
