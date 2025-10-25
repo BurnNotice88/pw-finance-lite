@@ -1,244 +1,152 @@
-// ---------- Datenhaltung ----------
-const LS_KEY = 'fainance:data';
+// ---------- Utilities ----------
+const CHF = n => {
+  const v = Number(n || 0);
+  return v.toLocaleString("de-CH", { style:"currency", currency:"CHF", maximumFractionDigits:2 });
+};
+const sum = arr => (arr || []).reduce((a, x) => a + (Number(x.value)||0), 0);
 
-const demoData = {
+// ---------- Data (localStorage) ----------
+const LS_KEY = "fainance-data-v1";
+const DEFAULT_DATA = {
   wallace: {
-    income: [{ label: 'Lohn', amount: 5550 }],
-    expenses: [
-      { label: 'Miete', amount: 1650 },
-      { label: 'Versicherungen', amount: 310 },
-      { label: 'Lebensmittel', amount: 500 },
-    ],
+    income:  [{ name:"Lohn", value: 5550 }, { name:"Nebenjob", value: 0 }],
+    expense: [{ name:"Miete", value: 1350 }, { name:"Versicherungen", value: 1000 }],
   },
   patricia: {
-    income: [
-      { label: 'Lohn', amount: 5200 },
-      { label: 'Salon-Bonus', amount: 400 },
-    ],
-    expenses: [
-      { label: 'Miete', amount: 1400 },
-      { label: 'Versicherungen', amount: 210 },
-      { label: 'ÖV/Auto', amount: 110 },
-      { label: 'Lebensmittel', amount: 500 },
-    ],
+    income:  [{ name:"Lohn", value: 5200 }, { name:"Salon-Bonus", value: 400 }],
+    expense: [{ name:"Miete", value: 1400 }, { name:"Versicherungen", value: 210 }],
   },
+  joint: {
+    income:  [{ name:"Nebeneinkünfte", value: 500 }],
+    expense: [{ name:"Haushalt", value: 500 }],
+  }
 };
 
-function loadData() {
-  try {
+let data = load();
+function load(){
+  try{
     const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return structuredClone(demoData);
-    const data = JSON.parse(raw);
-    ['wallace', 'patricia'].forEach(k => {
-      data[k] ??= { income: [], expenses: [] };
-      data[k].income ??= [];
-      data[k].expenses ??= [];
-    });
-    return data;
-  } catch {
-    return structuredClone(demoData);
+    return raw ? JSON.parse(raw) : structuredClone(DEFAULT_DATA);
+  }catch(_){
+    return structuredClone(DEFAULT_DATA);
   }
 }
-function saveData() {
-  localStorage.setItem(LS_KEY, JSON.stringify(state));
+function save(){
+  localStorage.setItem(LS_KEY, JSON.stringify(data));
   renderAll();
-}
-
-let state = loadData();
-
-// ---------- Helpers ----------
-const CHF = n =>
-  'CHF ' +
-  Number(n || 0).toLocaleString('de-CH', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-
-const sum = arr => arr.reduce((a, b) => a + (Number(b.amount) || 0), 0);
-
-const personTotals = person => {
-  const income = sum(person.income);
-  const expenses = sum(person.expenses);
-  return { income, expenses, balance: income - expenses };
-};
-
-function setText(id, txt, positive = true) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent = txt;
-  el.classList.remove('positive', 'negative');
-  el.classList.add(positive ? 'positive' : 'negative');
-}
-
-// ---------- Rendering: Übersicht & Tabs ----------
-function renderHome() {
-  const w = personTotals(state.wallace);
-  const p = personTotals(state.patricia);
-  const g = { income: w.income + p.income, expenses: w.expenses + p.expenses };
-  g.balance = g.income - g.expenses;
-
-  setText('home-w-income', CHF(w.income));
-  setText('home-w-expense', CHF(w.expenses));
-  setText('home-w-balance', CHF(w.balance), w.balance >= 0);
-
-  setText('home-p-income', CHF(p.income));
-  setText('home-p-expense', CHF(p.expenses));
-  setText('home-p-balance', CHF(p.balance), p.balance >= 0);
-
-  setText('home-g-income', CHF(g.income));
-  setText('home-g-expense', CHF(g.expenses));
-  setText('home-g-balance', CHF(g.balance), g.balance >= 0);
-}
-
-function renderPersonCards() {
-  const w = personTotals(state.wallace);
-  setText('w-income', CHF(w.income));
-  setText('w-expense', CHF(w.expenses));
-  setText('w-balance', CHF(w.balance), w.balance >= 0);
-
-  const p = personTotals(state.patricia);
-  setText('p-income', CHF(p.income));
-  setText('p-expense', CHF(p.expenses));
-  setText('p-balance', CHF(p.balance), p.balance >= 0);
-
-  const gInc = w.income + p.income;
-  const gExp = w.expenses + p.expenses;
-  const gBal = gInc - gExp;
-
-  setText('g-income', CHF(gInc));
-  setText('g-expense', CHF(gExp));
-  setText('g-balance', CHF(gBal), gBal >= 0);
-}
-
-// ---------- Einstellungen (Editor) ----------
-function renderEditorList(containerId, items, onChange) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = '';
-  items.forEach((item, idx) => {
-    const div = document.createElement('div');
-    div.className = 'item';
-    div.innerHTML = `
-      <input class="input" type="text" placeholder="Bezeichnung" value="${item.label ?? ''}">
-      <input class="amount" type="number" inputmode="decimal" step="0.01" placeholder="Betrag (CHF)" value="${item.amount ?? ''}">
-      <button class="del" title="Entfernen">✕</button>
-    `;
-    const [labelEl, amountEl, delBtn] = div.children;
-
-    // Während des Tippens NUR in-memory aktualisieren – kein saveData()
-    labelEl.addEventListener('input', () => {
-      items[idx].label = labelEl.value;
-    });
-    amountEl.addEventListener('input', () => {
-      // Erlaube Eingaben wie "10000" ohne sofortiges Speichern
-      const v = amountEl.value.replace(',', '.');
-      items[idx].amount = v === '' ? '' : parseFloat(v) || 0;
-    });
-
-    // Speichern erst bei Blur oder Enter
-    const commit = () => {
-      // Leere Beträge -> 0 speichern
-      if (items[idx].amount === '') items[idx].amount = 0;
-      saveData();
-      // neu rendern, damit formatierte Zahlen erscheinen
-      onChange();
-    };
-    labelEl.addEventListener('blur', commit);
-    amountEl.addEventListener('blur', commit);
-    labelEl.addEventListener('keydown', e => { if (e.key === 'Enter') labelEl.blur(); });
-    amountEl.addEventListener('keydown', e => { if (e.key === 'Enter') amountEl.blur(); });
-
-    delBtn.addEventListener('click', () => {
-      items.splice(idx, 1);
-      saveData();
-      onChange();
-    });
-
-    container.appendChild(div);
-  });
-}
-
-function renderSettings() {
-  renderEditorList('w-income-list', state.wallace.income, renderSettings);
-  renderEditorList('w-expense-list', state.wallace.expenses, renderSettings);
-  renderEditorList('p-income-list', state.patricia.income, renderSettings);
-  renderEditorList('p-expense-list', state.patricia.expenses, renderSettings);
-}
-
-function addItem(where) {
-  if (where === 'w-income') state.wallace.income.push({ label: '', amount: 0 });
-  if (where === 'w-expense') state.wallace.expenses.push({ label: '', amount: 0 });
-  if (where === 'p-income') state.patricia.income.push({ label: '', amount: 0 });
-  if (where === 'p-expense') state.patricia.expenses.push({ label: '', amount: 0 });
-  saveData();
-  renderSettings();
-}
-
-// ---------- Export / Import / Reset ----------
-function exportJSON() {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'fainance-export.json';
-  a.click();
-  URL.revokeObjectURL(url);
-}
-function importJSON(file) {
-  const reader = new FileReader();
-  reader.onload = () => {
-    try {
-      const data = JSON.parse(reader.result);
-      state = data;
-      saveData();
-      renderSettings();
-    } catch {
-      alert('Datei ungültig.');
-    }
-  };
-  reader.readAsText(file);
-}
-function resetDemo() {
-  if (!confirm('Beispieldaten laden und aktuelle Werte überschreiben?')) return;
-  state = structuredClone(demoData);
-  saveData();
-  renderSettings();
 }
 
 // ---------- Navigation ----------
-const tabButtons = document.querySelectorAll('.bottom-nav .chip');
-const tabs = {
-  home: document.getElementById('tab-home'),
-  wallace: document.getElementById('tab-wallace'),
-  patricia: document.getElementById('tab-patricia'),
-  gemeinsam: document.getElementById('tab-gemeinsam'),
-  settings: document.getElementById('tab-settings'),
-};
-function showTab(name) {
-  Object.values(tabs).forEach(t => t.classList.remove('active'));
-  tabs[name]?.classList.add('active');
-  tabButtons.forEach(b => b.classList.toggle('active', b.dataset.tab === name));
-  renderAll();
-}
-tabButtons.forEach(b => b.addEventListener('click', () => showTab(b.dataset.tab)));
-
-// ---------- Init ----------
-function renderAll() {
-  renderHome();
-  renderPersonCards();
-  if (tabs.settings.classList.contains('active')) renderSettings();
-}
-
-function initActions() {
-  document.querySelectorAll('[data-add]').forEach(btn => {
-    btn.addEventListener('click', () => addItem(btn.dataset.add));
+const views = document.querySelectorAll(".view");
+const tabs = document.querySelectorAll(".tabbar .tab");
+tabs.forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    tabs.forEach(x=>x.classList.remove("active"));
+    btn.classList.add("active");
+    const id = btn.dataset.target;
+    views.forEach(v=>v.classList.toggle("active", v.id===id));
   });
-  document.getElementById('export-json').addEventListener('click', exportJSON);
-  document.getElementById('import-json').addEventListener('change', e => {
-    if (e.target.files && e.target.files[0]) importJSON(e.target.files[0]);
-    e.target.value = '';
+});
+
+// ---------- Rendering ----------
+function renderSummary(){
+  const wI = sum(data.wallace.income),  wE = sum(data.wallace.expense);
+  const pI = sum(data.patricia.income), pE = sum(data.patricia.expense);
+  const jI = sum(data.joint.income),    jE = sum(data.joint.expense);
+
+  // Home
+  setText("sum-w-income", CHF(wI));
+  setText("sum-w-expense", CHF(wE));
+  setText("sum-w-balance", CHF(wI-wE));
+  setText("sum-p-income", CHF(pI));
+  setText("sum-p-expense", CHF(pE));
+  setText("sum-p-balance", CHF(pI-pE));
+  setText("sum-j-income", CHF(jI));
+  setText("sum-j-expense", CHF(jE));
+  setText("sum-j-balance", CHF(jI-jE));
+
+  // Personenseiten
+  setText("w-income", CHF(wI));    setText("w-expense", CHF(wE));    setText("w-balance", CHF(wI-wE));
+  setText("p-income", CHF(pI));    setText("p-expense", CHF(pE));    setText("p-balance", CHF(pI-pE));
+  setText("j-income", CHF(jI));    setText("j-expense", CHF(jE));    setText("j-balance", CHF(jI-jE));
+}
+function setText(id, text){ const el = document.getElementById(id); if(el) el.textContent = text; }
+
+function loadFormValues(){
+  document.querySelectorAll("#form-settings [data-path]").forEach(input=>{
+    const val = getByPath(data, input.dataset.path);
+    input.value = isMoneyField(input) ? money(val) : (val?.toString() ?? "");
   });
-  document.getElementById('reset-demo').addEventListener('click', resetDemo);
+}
+const isMoneyField = (el)=> /\.\w+value\]?$/.test(el.dataset.path);
+const money = v => (Number(v||0)).toString();
+
+function getByPath(obj, path){
+  // e.g. "wallace.income[0].value"
+  return path.split('.').reduce((acc, part)=>{
+    const m = part.match(/^(\w+)\[(\d+)\]$/);
+    if(m){ acc = acc?.[m[1]]?.[Number(m[2])]; }
+    else  { acc = acc?.[part]; }
+    return acc;
+  }, obj);
+}
+function setByPath(obj, path, value){
+  const parts = path.split('.');
+  let cur = obj;
+  for(let i=0;i<parts.length;i++){
+    const m = parts[i].match(/^(\w+)\[(\d+)\]$/);
+    if(i === parts.length-1){
+      if(m) cur[m[1]][Number(m[2])] = value;
+      else  cur[parts[i]] = value;
+    }else{
+      if(m){ cur = cur[m[1]][Number(m[2])]; }
+      else  { cur = cur[parts[i]]; }
+    }
+  }
 }
 
-initActions();
+// ---------- Form logic (NO auto save) ----------
+const form = document.getElementById("form-settings");
+form.addEventListener("submit", (e)=>{
+  e.preventDefault();
+
+  // Build a draft copy from current inputs
+  const draft = structuredClone(data);
+  document.querySelectorAll("#form-settings [data-path]").forEach(input=>{
+    const raw = input.value.trim();
+    const path = input.dataset.path;
+    // Decide whether it's a name or a numeric value
+    if(isMoneyField(input)){
+      const n = Number(raw.replace(/[^0-9.,-]/g,"").replace(',','.'));
+      // find holding object and set its value, preserving name
+      const holder = getByPath(draft, path.replace(/\.value$/,''));
+      setByPath(draft, path.replace(/\.value$/,''), { ...holder, value: isFinite(n)? n : 0 });
+    }else{
+      const holder = getByPath(draft, path.replace(/\.name$/,''));
+      setByPath(draft, path.replace(/\.name$/,''), { ...holder, name: raw });
+    }
+  });
+
+  data = draft;
+  save();
+  alert("Gespeichert.");
+});
+
+// Reset (lädt aktuelle gespeicherte Werte erneut ins Formular)
+document.getElementById("btn-cancel").addEventListener("click", ()=>{
+  loadFormValues();
+});
+
+// Verhindere Autospeichern / Blur-Aktion -> nichts
+document.querySelectorAll("#form-settings input").forEach(inp=>{
+  inp.addEventListener("input", ()=>{/* live nichts speichern */});
+  inp.addEventListener("change", ()=>{/* nichts */});
+  inp.addEventListener("blur", ()=>{/* nichts */});
+});
+
+// ---------- Initial ----------
+function renderAll(){
+  renderSummary();
+}
 renderAll();
+loadFormValues();
