@@ -3,205 +3,247 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>FAINANCE®</title>
+  <title>FAINANCE</title>
   <link rel="stylesheet" href="style.css" />
-
-  <!-- Firebase (quasi Auto-Login: erster Login bleibt gespeichert) -->
-  <script type="module">
-    // Firebase via ES Modules (12.x)
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
-    import {
-      getAuth,
-      setPersistence,
-      browserLocalPersistence,
-      onAuthStateChanged,
-      signInWithEmailAndPassword,
-      signOut
-    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
-
-    // --- Deine bestehende Firebase-Konfiguration ---
-    const firebaseConfig = {
-      apiKey: "AIzaSyDr9Rpwmyb6CabzD602uq43rf84sJO3Xu8",
-      authDomain: "budgetai-77842.firebaseapp.com",
-      projectId: "budgetai-77842",
-      storageBucket: "budgetai-77842.firebasestorage.app",
-      messagingSenderId: "702742240654",
-      appId: "1:702742240654:web:93be69888bfbdf24e498df",
-      measurementId: "G-PTMSZGRYW4"
-    };
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    // Persistente Session (Auto-Login auf dem Gerät)
-    setPersistence(auth, browserLocalPersistence).catch(() => {});
-
-    // Auth-State an app.js weiterreichen, sobald geladen
-    window.__authReady = new Promise(resolve => {
-      onAuthStateChanged(auth, (user) => {
-        window.__currentUser = user || null;
-        resolve(user || null);
-        // app.js kann dann UI umschalten
-        if (window.__onAuthChange) window.__onAuthChange(user || null);
-      });
-    });
-
-    // Exporte für app.js
-    window.__firebase = { app, auth, signInWithEmailAndPassword, signOut };
-  </script>
 </head>
 <body>
-  <div id="app">
-    <!-- Header -->
-    <header class="app-header">
-      <div class="header-left">
-        <img src="assets/logo-fainance.png" alt="FAINANCE Logo" class="logo" />
-        <h1 class="title"><span class="tight">F</span><strong>AI</strong><span class="tight">NANCE</span><sup>®</sup></h1>
-      </div>
-      <div class="header-right">
-        <span id="sync-indicator" class="sync-badge">Offline</span>
-      </div>
-    </header>
-
-    <!-- Monat-Auswahl (sticky unter Header) -->
-    <div class="monthbar">
-      <label for="monthSelect" class="sr-only">Monat wählen</label>
-      <select id="monthSelect" class="month-select" aria-label="Monat wählen"></select>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-left">F</span><strong class="brand-ai">AI</strong><span class="brand-right">NANCE</span><span class="brand-r">®</span>
     </div>
 
-    <!-- Login (nur sichtbar, wenn nicht angemeldet) -->
-    <main id="login-screen" class="screen hidden">
-      <section class="card">
-        <h2>Anmelden</h2>
-        <p class="muted">Einmal einloggen, danach automatisch eingeloggt auf diesem Gerät.</p>
-        <div class="form">
-          <label>E-Mail
-            <input type="email" id="email" inputmode="email" autocomplete="username" placeholder="name@domain.ch" />
-          </label>
-          <label>Passwort
-            <input type="password" id="password" autocomplete="current-password" placeholder="********" />
-          </label>
-          <button id="btn-login" class="btn primary">Anmelden</button>
-          <p id="login-error" class="error hidden"></p>
-        </div>
-      </section>
-    </main>
+    <div class="period-picker">
+      <button class="icon-btn" id="prevMonth" aria-label="Voriger Monat">‹</button>
+      <select id="monthSelect" aria-label="Monat auswählen"></select>
+      <button class="icon-btn" id="nextMonth" aria-label="Nächster Monat">›</button>
+    </div>
+  </header>
 
-    <!-- App-Inhalt (nur sichtbar, wenn angemeldet) -->
-    <main id="app-screen" class="screen hidden">
-      <!-- Seitencontainer -->
-      <section id="view-dashboard" class="view active">
-        <div class="card">
-          <h2>Gesamtübersicht</h2>
-          <div class="row spread muted"><span>Einnahmen</span><span id="sum-income">CHF 0.00</span></div>
-          <div class="row spread muted"><span>Ausgaben</span><span id="sum-expense">CHF 0.00</span></div>
-          <div class="row spread total"><span>Bilanz</span><span id="sum-balance">CHF 0.00</span></div>
-        </div>
+  <!-- Hauptinhalt (Tabs) -->
+  <main id="view-container">
+    <!-- Home (Dashboard) -->
+    <section class="view active" id="view-home" aria-labelledby="home-title">
+      <h1 id="home-title" class="page-title">Übersicht</h1>
 
-        <div class="card">
-          <div class="card-head">
-            <h3>Wallace</h3><span class="badge" id="badge-w">IST</span>
-          </div>
-          <div class="mini-bars">
-            <div class="bar">
-              <div class="bar-label">Einnahmen</div>
-              <div class="bar-track"><div class="bar-fill income" style="width: 40%"></div></div>
-              <div class="bar-value" id="w-income">CHF 0.00</div>
-            </div>
-            <div class="bar">
-              <div class="bar-label">Ausgaben</div>
-              <div class="bar-track"><div class="bar-fill expense" style="width: 20%"></div></div>
-              <div class="bar-value" id="w-expense">CHF 0.00</div>
-            </div>
-          </div>
-          <div class="row spread"><span>Bilanz</span><span id="w-balance">CHF 0.00</span></div>
+      <!-- Wallace -->
+      <article class="card">
+        <div class="card-head">
+          <h2>Wallace</h2>
+          <span class="chip">IST</span>
         </div>
-
-        <div class="card">
-          <div class="card-head">
-            <h3>Patricia</h3><span class="badge" id="badge-p">IST</span>
+        <div class="rows">
+          <div class="row">
+            <span>Einnahmen</span>
+            <span class="money" id="w-inc">CHF 0.00</span>
           </div>
-          <div class="mini-bars">
-            <div class="bar">
-              <div class="bar-label">Einnahmen</div>
-              <div class="bar-track"><div class="bar-fill income" style="width: 50%"></div></div>
-              <div class="bar-value" id="p-income">CHF 0.00</div>
-            </div>
-            <div class="bar">
-              <div class="bar-label">Ausgaben</div>
-              <div class="bar-track"><div class="bar-fill expense" style="width: 30%"></div></div>
-              <div class="bar-value" id="p-expense">CHF 0.00</div>
-            </div>
+          <div class="row">
+            <span>Ausgaben</span>
+            <span class="money" id="w-exp">CHF 0.00</span>
           </div>
-          <div class="row spread"><span>Bilanz</span><span id="p-balance">CHF 0.00</span></div>
-        </div>
-
-        <div class="card">
-          <div class="card-head">
-            <h3>Gemeinsam</h3><span class="badge" id="badge-s">IST</span>
-          </div>
-          <div class="mini-bars">
-            <div class="bar">
-              <div class="bar-label">Einnahmen</div>
-              <div class="bar-track"><div class="bar-fill income" style="width: 30%"></div></div>
-              <div class="bar-value" id="s-income">CHF 0.00</div>
-            </div>
-            <div class="bar">
-              <div class="bar-label">Ausgaben</div>
-              <div class="bar-track"><div class="bar-fill expense" style="width: 25%"></div></div>
-              <div class="bar-value" id="s-expense">CHF 0.00</div>
-            </div>
-          </div>
-          <div class="row spread"><span>Bilanz</span><span id="s-balance">CHF 0.00</span></div>
-        </div>
-
-        <div class="card">
-          <div class="card-head tight-head">
-            <h3>Schulden Übersicht</h3>
-          </div>
-          <div class="row stack">
-            <div class="row spread muted"><span>Wallace</span><span id="debt-w">CHF 0.00 | 0/Mt</span></div>
-            <div class="row spread muted"><span>Patricia</span><span id="debt-p">CHF 0.00 | 0/Mt</span></div>
-            <div class="row spread muted"><span>Gemeinsam</span><span id="debt-s">CHF 0.00 | 0/Mt</span></div>
-            <div class="divider"></div>
-            <div class="row spread total"><span>Total</span><span id="debt-total">CHF 0.00</span></div>
+          <div class="divider"></div>
+          <div class="row strong">
+            <span>Bilanz</span>
+            <span class="money" id="w-bal">CHF 0.00</span>
           </div>
         </div>
-      </section>
+      </article>
 
-      <section id="view-wallace" class="view">
-        <div class="card"><h2>Wallace (V1 – Vorschau)</h2><p class="muted">Detail-Analysen folgen in M3–M5.</p></div>
-      </section>
-
-      <section id="view-patricia" class="view">
-        <div class="card"><h2>Patricia (V1 – Vorschau)</h2><p class="muted">Detail-Analysen folgen in M3–M5.</p></div>
-      </section>
-
-      <section id="view-shared" class="view">
-        <div class="card"><h2>Gemeinsam (V1 – Vorschau)</h2><p class="muted">Detail-Analysen folgen in M3–M5.</p></div>
-      </section>
-
-      <section id="view-settings" class="view">
-        <div class="card">
-          <h2>Einstellungen</h2>
-          <p class="muted">Hier kommt der gesamte Editor (M2–M4). In M1 ist nur die Shell & Navigation.</p>
-          <div class="row spread muted"><span>Status</span><span id="whoami">–</span></div>
-          <div class="row end">
-            <button id="btn-logout" class="btn">Abmelden</button>
+      <!-- Patricia -->
+      <article class="card">
+        <div class="card-head">
+          <h2>Patricia</h2>
+          <span class="chip">IST</span>
+        </div>
+        <div class="rows">
+          <div class="row">
+            <span>Einnahmen</span>
+            <span class="money" id="p-inc">CHF 0.00</span>
+          </div>
+          <div class="row">
+            <span>Ausgaben</span>
+            <span class="money" id="p-exp">CHF 0.00</span>
+          </div>
+          <div class="divider"></div>
+          <div class="row strong">
+            <span>Bilanz</span>
+            <span class="money" id="p-bal">CHF 0.00</span>
           </div>
         </div>
-      </section>
-    </main>
+      </article>
 
-    <!-- Tabbar -->
-    <nav class="tabbar">
-      <button class="tab active" data-target="dashboard">Dashboard</button>
-      <button class="tab" data-target="wallace">Wallace</button>
-      <button class="tab" data-target="patricia">Patricia</button>
-      <button class="tab" data-target="shared">Gemeinsam</button>
-      <button class="tab" data-target="settings">Einstellungen</button>
-    </nav>
-  </div>
+      <!-- Gemeinsam -->
+      <article class="card">
+        <div class="card-head">
+          <h2>Gemeinsam</h2>
+          <span class="chip">IST</span>
+        </div>
+        <div class="rows">
+          <div class="row">
+            <span>Einnahmen</span>
+            <span class="money" id="g-inc">CHF 0.00</span>
+          </div>
+          <div class="row">
+            <span>Ausgaben</span>
+            <span class="money" id="g-exp">CHF 0.00</span>
+          </div>
+          <div class="divider"></div>
+          <div class="row strong">
+            <span>Bilanz</span>
+            <span class="money" id="g-bal">CHF 0.00</span>
+          </div>
+        </div>
+      </article>
 
-  <script src="app.js" type="module"></script>
+      <!-- Schulden -->
+      <article class="card">
+        <div class="card-head">
+          <h2>Schulden</h2>
+        </div>
+        <div class="rows">
+          <div class="row">
+            <span>Wallace</span>
+            <span class="money" id="w-debt">CHF 0.00</span>
+          </div>
+          <div class="row">
+            <span>Patricia</span>
+            <span class="money" id="p-debt">CHF 0.00</span>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- Wallace Detail -->
+    <section class="view" id="view-wallace" aria-labelledby="w-title">
+      <h1 id="w-title" class="page-title">Wallace</h1>
+      <article class="card">
+        <div class="card-head"><h2>Einnahmen</h2></div>
+        <div id="w-inc-list" class="kv-list"></div>
+      </article>
+      <article class="card">
+        <div class="card-head"><h2>Ausgaben</h2></div>
+        <div id="w-exp-list" class="kv-list"></div>
+      </article>
+    </section>
+
+    <!-- Patricia Detail -->
+    <section class="view" id="view-patricia" aria-labelledby="p-title">
+      <h1 id="p-title" class="page-title">Patricia</h1>
+      <article class="card">
+        <div class="card-head"><h2>Einnahmen</h2></div>
+        <div id="p-inc-list" class="kv-list"></div>
+      </article>
+      <article class="card">
+        <div class="card-head"><h2>Ausgaben</h2></div>
+        <div id="p-exp-list" class="kv-list"></div>
+      </article>
+    </section>
+
+    <!-- Gemeinsam Detail -->
+    <section class="view" id="view-gemeinsam" aria-labelledby="g-title">
+      <h1 id="g-title" class="page-title">Gemeinsam</h1>
+      <article class="card">
+        <div class="card-head"><h2>Einnahmen</h2></div>
+        <div id="g-inc-list" class="kv-list"></div>
+      </article>
+      <article class="card">
+        <div class="card-head"><h2>Ausgaben</h2></div>
+        <div id="g-exp-list" class="kv-list"></div>
+      </article>
+    </section>
+
+    <!-- Einstellungen (einzige editierbare Ansicht) -->
+    <section class="view" id="view-settings" aria-labelledby="s-title">
+      <h1 id="s-title" class="page-title">Einstellungen</h1>
+
+      <article class="card">
+        <div class="card-head"><h2>Wallace – Einnahmen</h2></div>
+        <form class="form-grid" data-scope="w" data-type="income">
+          <div class="field"><input type="text" placeholder="Bezeichnung" /></div>
+          <div class="field"><input type="number" inputmode="decimal" step="0.01" placeholder="Betrag (CHF)" /></div>
+          <button type="button" class="btn" data-action="add">Hinzufügen</button>
+        </form>
+        <div class="mini-list" id="w-income-edit"></div>
+      </article>
+
+      <article class="card">
+        <div class="card-head"><h2>Wallace – Ausgaben</h2></div>
+        <form class="form-grid" data-scope="w" data-type="expense">
+          <div class="field"><input type="text" placeholder="Bezeichnung" /></div>
+          <div class="field"><input type="number" inputmode="decimal" step="0.01" placeholder="Betrag (CHF)" /></div>
+          <button type="button" class="btn" data-action="add">Hinzufügen</button>
+        </form>
+        <div class="mini-list" id="w-expense-edit"></div>
+      </article>
+
+      <article class="card">
+        <div class="card-head"><h2>Patricia – Einnahmen</h2></div>
+        <form class="form-grid" data-scope="p" data-type="income">
+          <div class="field"><input type="text" placeholder="Bezeichnung" /></div>
+          <div class="field"><input type="number" inputmode="decimal" step="0.01" placeholder="Betrag (CHF)" /></div>
+          <button type="button" class="btn" data-action="add">Hinzufügen</button>
+        </form>
+        <div class="mini-list" id="p-income-edit"></div>
+      </article>
+
+      <article class="card">
+        <div class="card-head"><h2>Patricia – Ausgaben</h2></div>
+        <form class="form-grid" data-scope="p" data-type="expense">
+          <div class="field"><input type="text" placeholder="Bezeichnung" /></div>
+          <div class="field"><input type="number" inputmode="decimal" step="0.01" placeholder="Betrag (CHF)" /></div>
+          <button type="button" class="btn" data-action="add">Hinzufügen</button>
+        </form>
+        <div class="mini-list" id="p-expense-edit"></div>
+      </article>
+
+      <article class="card">
+        <div class="card-head"><h2>Gemeinsam – Einnahmen</h2></div>
+        <form class="form-grid" data-scope="g" data-type="income">
+          <div class="field"><input type="text" placeholder="Bezeichnung" /></div>
+          <div class="field"><input type="number" inputmode="decimal" step="0.01" placeholder="Betrag (CHF)" /></div>
+          <button type="button" class="btn" data-action="add">Hinzufügen</button>
+        </form>
+        <div class="mini-list" id="g-income-edit"></div>
+      </article>
+
+      <article class="card">
+        <div class="card-head"><h2>Gemeinsam – Ausgaben</h2></div>
+        <form class="form-grid" data-scope="g" data-type="expense">
+          <div class="field"><input type="text" placeholder="Bezeichnung" /></div>
+          <div class="field"><input type="number" inputmode="decimal" step="0.01" placeholder="Betrag (CHF)" /></div>
+          <button type="button" class="btn" data-action="add">Hinzufügen</button>
+        </form>
+        <div class="mini-list" id="g-expense-edit"></div>
+      </article>
+
+      <article class="card">
+        <div class="card-head"><h2>Schulden</h2></div>
+        <form class="form-grid" data-scope="w" data-type="debt">
+          <div class="field"><input type="text" placeholder="Wallace – Bezeichnung" /></div>
+          <div class="field"><input type="number" inputmode="decimal" step="0.01" placeholder="Betrag (CHF)" /></div>
+          <button type="button" class="btn" data-action="add">Hinzufügen</button>
+        </form>
+        <div class="mini-list" id="w-debt-edit"></div>
+
+        <form class="form-grid" data-scope="p" data-type="debt">
+          <div class="field"><input type="text" placeholder="Patricia – Bezeichnung" /></div>
+          <div class="field"><input type="number" inputmode="decimal" step="0.01" placeholder="Betrag (CHF)" /></div>
+          <button type="button" class="btn" data-action="add">Hinzufügen</button>
+        </form>
+        <div class="mini-list" id="p-debt-edit"></div>
+      </article>
+    </section>
+  </main>
+
+  <!-- Bottom Nav -->
+  <nav class="tabbar" aria-label="Navigation">
+    <button data-target="view-home" class="tab active">Home</button>
+    <button data-target="view-wallace" class="tab">Wallace</button>
+    <button data-target="view-patricia" class="tab">Patricia</button>
+    <button data-target="view-gemeinsam" class="tab">Gemeinsam</button>
+    <button data-target="view-settings" class="tab">Einstellungen</button>
+  </nav>
+
+  <script src="app.js"></script>
 </body>
 </html>
