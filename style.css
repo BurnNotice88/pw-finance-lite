@@ -1,34 +1,83 @@
-:root { --bg:#0b0b0b; --fg:#fff; --muted:#b9b9b9; --card:#141414; --line:#262626; --ok:#2fbf71; --bad:#ff5f5f; }
+/* ==== Farben (UBS-Style) ==== */
+:root{
+  --bg:#f6f7f8;              /* Seitenhintergrund hell */
+  --card:#ffffff;            /* Karten weiß */
+  --line:#e7e8ea;            /* feine Linien */
+  --text:#121314;            /* Haupttext dunkel */
+  --muted:#6b7177;           /* Sekundärtext */
+  --red:#e00024;             /* Primär Rot */
+  --red-weak:#ffedf0;        /* zarte Rotfläche */
+  --shadow:0 1px 2px rgba(0,0,0,.06), 0 8px 24px rgba(0,0,0,.06);
+}
+
+/* ==== Grundlayout ==== */
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#0f0f10;color:#eaeaea;display:flex}
-.sidebar{position:sticky;top:0;align-self:flex-start;height:100vh;width:240px;background:#111;border-right:1px solid var(--line);padding:22px 16px}
-.logo{font-weight:700;font-size:20px;margin-bottom:18px}
-.sidebar nav a{display:block;padding:10px 8px;color:#d7d7d7;text-decoration:none;border-radius:8px;margin-bottom:6px}
-.sidebar nav a.active,.sidebar nav a:hover{background:#1a1a1a;color:#fff}
-.content{flex:1;min-height:100vh;padding:18px}
-.view{max-width:980px;margin:0 auto}
-h1{margin:0 0 16px}
-.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-@media (max-width:840px){.grid-3{grid-template-columns:1fr} .sidebar{position:fixed;left:0;bottom:0;top:auto;height:auto;width:100%;display:flex;gap:8px;overflow-x:auto}.content{padding-bottom:72px} .logo{display:none} .sidebar nav{display:flex;gap:8px} .sidebar nav a{white-space:nowrap}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
-.row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line)}
+body{margin:0;font-family: -apple-system, BlinkMacSystemFont, Inter, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); background:var(--bg);}
+
+.topbar{
+  position:sticky; top:0; z-index:5;
+  height:52px; display:flex; align-items:center;
+  padding:0 16px; background:#fff; border-bottom:1px solid var(--line);
+}
+.brand{font-weight:600; letter-spacing:.2px}
+
+.content{padding:12px 12px 76px; max-width:1000px; margin:0 auto;}
+h1{margin:0 0 10px; font-size:20px}
+
+/* ==== Cards kompakt ==== */
+.card{
+  background:var(--card); border:1px solid var(--line); border-radius:14px;
+  box-shadow:var(--shadow); padding:12px; margin-bottom:10px;
+}
+.grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+@media (max-width:840px){.grid-3{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.grid-3{grid-template-columns:1fr}}
+
+.row{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--line);}
 .row:last-child{border-bottom:none}
-.total{margin-top:8px;border-top:1px solid var(--line);padding-top:10px}
-.total.pos b{color:var(--ok)} .total.neg b{color:var(--bad)}
-table{width:100%;border-collapse:collapse}
-th,td{padding:10px 8px;border-bottom:1px solid var(--line)}
-th{text-align:left;color:#bfbfbf;font-weight:600}
-td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.total{margin-top:6px; padding-top:6px; border-top:1px solid var(--line)}
+.total b{font-weight:700}
+.total.pos b{color:#198754}
+.total.neg b{color:#c1121f}
+
+/* ==== Tabellen kompakt ==== */
+table{width:100%; border-collapse:collapse}
+th,td{padding:8px 6px; border-bottom:1px solid var(--line)}
+th{color:var(--muted); font-weight:600; font-size:12.5px}
+td{font-size:14px}
+td.num,th.num{text-align:right; font-variant-numeric:tabular-nums}
+
+/* Zwei Spalten Bereich */
+.two-col{display:grid; grid-template-columns:1fr 1fr; gap:10px}
 @media (max-width:840px){.two-col{grid-template-columns:1fr}}
-.form .flex{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+
+/* ==== Formular kompakt ==== */
+.form .flex{display:grid; grid-template-columns:1fr 1fr; gap:12px}
 @media (max-width:840px){.form .flex{grid-template-columns:1fr}}
-.form .rows{display:flex;flex-direction:column;gap:8px}
-.form .form-row{display:grid;grid-template-columns:2fr 1fr;gap:8px}
-.form input[type="text"],.form input[type="number"]{width:100%;padding:10px 12px;background:#0f0f10;border:1px solid var(--line);color:#ececec;border-radius:8px}
-.actions{margin-top:16px;display:flex;justify-content:flex-end;gap:10px}
-.actions button{background:#fff;color:#000;border:none;padding:10px 14px;border-radius:10px;cursor:pointer}
-.actions button:hover{opacity:.9}
-.flash{margin-bottom:12px}
-.flash .msg{padding:10px 12px;border-radius:10px;border:1px solid #204f36;background:#122d1f}
+.form .rows{display:flex; flex-direction:column; gap:6px}
+.form .form-row{display:grid; grid-template-columns:2fr 1fr; gap:6px}
+.form input[type="text"], .form input[type="number"]{
+  width:100%; padding:10px 12px; background:#fff; border:1px solid var(--line);
+  border-radius:10px; color:var(--text);
+}
+.actions{margin-top:8px; display:flex; justify-content:flex-end}
+.actions button{
+  background:var(--red); color:#fff; border:none; padding:10px 14px; border-radius:10px; font-weight:600;
+}
+.actions button:active{transform:translateY(1px)}
+
+/* Flash Meldung */
+.flash{margin-bottom:10px}
+.flash .msg{padding:10px 12px; border-radius:10px; background:var(--red-weak); border:1px solid #ffd1d7}
+
+/* ==== Bottom Tabs (UBS-Style) ==== */
+.tabs{
+  position:fixed; left:0; right:0; bottom:0; height:60px; background:#fff;
+  border-top:1px solid var(--line); display:grid; grid-template-columns:repeat(5,1fr); gap:0; z-index:10;
+}
+.tabs button{
+  appearance:none; border:none; background:transparent; padding:6px 4px; font-size:12.5px; color:var(--muted);
+}
+.tabs button.active{color:var(--red); font-weight:700}
+.tabs button:active{opacity:.6}
