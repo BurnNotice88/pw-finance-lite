@@ -1,146 +1,103 @@
 :root{
-  --bg: #f7f9fb;
-  --card: #ffffff;
-  --text: #0f172a;
-  --muted: #64748b;
-  --line: #e5e9f0;
-  --ok: #09a66d;
-  --bad: #e11d48;
-  --brand: #111;
-  --ai: #e34a3c;          /* AI rot */
-  --ub-red: #e60000;      /* Wunsch-Rot */
+  --brand-red:#e53935;
+  --ink:#0f1720;
+  --ink-2:#374151;
+  --muted:#8a94a6;
+  --bg:#f6f7fb;
+  --card:#ffffff;
+  --shadow:0 6px 20px rgba(15,23,32,.05);
+  --radius:16px;
 }
 
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  color:var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Inter, Roboto, Arial, "Segoe UI", system-ui, sans-serif;
+  color:var(--ink);
   background:var(--bg);
   padding-bottom:84px; /* Platz für Tabbar */
 }
 
-/* Header / Brand */
+/* Header */
 .app-header{
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background:#fff;
-  border-bottom:1px solid var(--line);
+  position:sticky; top:0; z-index:5;
+  background:#fff; border-bottom:1px solid #eef1f5;
+}
+.brand-wrap{
+  display:flex; align-items:center; gap:.6rem;
+  padding:14px 16px;
+}
+.brand-logo{
+  height:28px; width:auto; display:block; object-fit:contain;
 }
 .brand{
-  font-weight:800;
-  letter-spacing:.5px;
-  padding:14px 16px;
-  font-size:28px;
+  font-size:22px; letter-spacing:.5px; margin:0; font-weight:800;
 }
-.brand .ai{color:var(--ai);font-weight:900}
-.r-sign{font-weight:700;font-size:.8rem;margin-left:4px}
+.brand-ai{ color:var(--brand-red); font-weight:900; }
+.reg{ font-size:.9rem; vertical-align:super; margin-left:2px; font-weight:600; color:#6b7280; }
 
 /* Month bar */
 .month-bar{
-  display:flex;
-  gap:10px;
-  align-items:center;
-  justify-content:center; /* ZENTRIERT */
-  padding:10px 12px 6px;
-  background:#fff;
-  border-bottom:1px solid var(--line);
+  display:flex; align-items:center; justify-content:center;
+  gap:10px; padding:10px 12px;
+  background:#fff; border-bottom:1px solid #eef1f5;
 }
-.chip{
-  border:1px solid var(--line);
-  background:#f5f7fa;
-  padding:10px 14px;
-  border-radius:12px;
-  font-weight:600;
-  font-size:16px;
+.month-btn{
+  border:1px solid #e5e7eb; background:#fff; color:var(--ink);
+  height:40px; width:44px; border-radius:12px; font-size:22px; line-height:1;
 }
-.chip.nav{
-  width:40px;
+.month-pill{
+  min-width:60%; max-width:90%;
   text-align:center;
-  padding:10px 0;
+  border:1px solid #e5e7eb; background:#f9fafb;
+  padding:10px 14px; border-radius:12px;
+  font-weight:700; color:var(--brand-red);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
-.month-chip{
-  color:var(--ub-red);     /* ROT, nicht blau */
-  background:#ffffff;
-}
-.hidden-month{position:absolute;left:-9999px}
 
-/* Views + Cards */
-.view{display:none;padding:14px}
-.view.active{display:block}
+/* Cards */
+main{ padding:16px; }
 .card{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:14px;
-  margin:12px 0;
-  box-shadow:0 1px 0 rgba(17,17,26,.02);
+  background:var(--card); border-radius:var(--radius);
+  padding:16px; margin:12px 0; box-shadow:var(--shadow);
 }
-.card-title{margin:0 0 6px 0}
-.card-header{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:6px;
-}
+.card-title{ font-size:20px; font-weight:800; margin:0 0 8px; }
+.with-badge{ display:flex; align-items:center; justify-content:space-between; }
 .badge{
-  font-size:.75rem;
-  color:#111;
-  background:#eef2f6;
-  border:1px solid var(--line);
-  padding:4px 8px;border-radius:999px;
+  background:#eef2ff; color:#475569; font-weight:700; font-size:12px;
+  padding:4px 8px; border-radius:999px;
 }
-.kv{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px dashed var(--line)}
-.kv:last-child{border-bottom:0}
-.kv .sum, .kv strong{font-variant-numeric:tabular-nums}
-.kv strong{color:#111}
-.kv.total strong{color:var(--ok)}
 
-/* Inputs / Listen auf Einstellungen */
-.section-title{padding:4px 14px;margin:10px 0 0 0}
-.input-row{display:flex;gap:8px;margin:8px 0}
-.input{
-  flex:1;
-  border:1px solid var(--line);
-  border-radius:10px;
-  padding:12px;
-  font-size:16px;
-  background:#fff;
+.row{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 0; color:var(--ink-2);
+  border-bottom:1px dashed #eef1f5;
 }
-.btn{
-  border:0;
-  border-radius:10px;
-  padding:12px 14px;
-  font-weight:700;
-  cursor:pointer;
-}
-.btn.add{background:var(--ub-red);color:#fff}
-.btn.del{background:#fff;border:1px solid var(--line);color:#d00}
-.list{list-style:none;margin:0;padding:0}
-.list li{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 0;border-bottom:1px dashed var(--line)
-}
-.list li:last-child{border-bottom:0}
-.item-label{color:var(--muted)}
-.item-amount{font-variant-numeric:tabular-nums}
+.row:last-child{ border-bottom:none }
+.row.total{ font-weight:800; color:var(--ink) }
+.money{ font-variant-numeric: tabular-nums; }
+
+/* Views */
+.view{ display:none }
+.view--active{ display:block }
 
 /* Tabbar */
 .tabbar{
-  position:fixed;left:0;right:0;bottom:0;
-  height:72px;background:#fff;border-top:1px solid var(--line);
-  display:flex;justify-content:space-around;align-items:center;
-  padding-bottom: env(safe-area-inset-bottom, 0);
-  z-index:50;
+  position:fixed; left:0; right:0; bottom:0; z-index:10;
+  background:#fff; border-top:1px solid #eef1f5;
+  display:flex; justify-content:space-around; align-items:center;
+  padding:8px 6px env(safe-area-inset-bottom);
 }
 .tab{
-  appearance:none;background:none;border:0;
-  display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;
-  padding:6px 8px;border-radius:12px;color:#8a8f98;font-weight:600
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:4px; min-width:64px; padding:6px 8px; border-radius:12px;
+  border:none; background:transparent; color:#6b7280; font-weight:700;
 }
-.tab .ico{font-size:20px;line-height:20px}
-.tab.active{color:var(--ub-red)}
-.tab.active .ico{transform:translateY(-1px)}
+.tab .ico{ font-size:20px; line-height:1 }
+.tab .lbl{ font-size:14px }
+.tab--active{ color:var(--brand-red); background:#fff5f5; }
+.tab:focus-visible{ outline:2px solid var(--brand-red) }
 
-/* Helfer */
-.hidden{display:none}
+/* Accessibility tap targets on iOS */
+button{ -webkit-tap-highlight-color: transparent; }
