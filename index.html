@@ -2,167 +2,206 @@
 <html lang="de">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FAINANCE</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>FAINANCE®</title>
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Firebase (quasi Auto-Login: erster Login bleibt gespeichert) -->
+  <script type="module">
+    // Firebase via ES Modules (12.x)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+    import {
+      getAuth,
+      setPersistence,
+      browserLocalPersistence,
+      onAuthStateChanged,
+      signInWithEmailAndPassword,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+
+    // --- Deine bestehende Firebase-Konfiguration ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyDr9Rpwmyb6CabzD602uq43rf84sJO3Xu8",
+      authDomain: "budgetai-77842.firebaseapp.com",
+      projectId: "budgetai-77842",
+      storageBucket: "budgetai-77842.firebasestorage.app",
+      messagingSenderId: "702742240654",
+      appId: "1:702742240654:web:93be69888bfbdf24e498df",
+      measurementId: "G-PTMSZGRYW4"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Persistente Session (Auto-Login auf dem Gerät)
+    setPersistence(auth, browserLocalPersistence).catch(() => {});
+
+    // Auth-State an app.js weiterreichen, sobald geladen
+    window.__authReady = new Promise(resolve => {
+      onAuthStateChanged(auth, (user) => {
+        window.__currentUser = user || null;
+        resolve(user || null);
+        // app.js kann dann UI umschalten
+        if (window.__onAuthChange) window.__onAuthChange(user || null);
+      });
+    });
+
+    // Exporte für app.js
+    window.__firebase = { app, auth, signInWithEmailAndPassword, signOut };
+  </script>
 </head>
 <body>
-  <!-- Header -->
-  <header class="app-header">
-    <h1 class="brand" aria-label="FAINANCE">
-      <span class="brand-f">F</span><span class="brand-ai">AI</span><span class="brand-rest">NANCE</span><sup class="brand-r">®</sup>
-    </h1>
-  </header>
-
-  <!-- Inhalt -->
-  <main id="view-container">
-    <section id="view-home" class="view active" aria-labelledby="home-tab">
-      <h2>Übersicht</h2>
-      <div class="card">
-        <div class="row">
-          <div>Wallace – Einnahmen</div><div id="sum-w-income" class="amount"></div>
-        </div>
-        <div class="row">
-          <div>Ausgaben</div><div id="sum-w-expense" class="amount"></div>
-        </div>
-        <div class="row total">
-          <div>Bilanz</div><div id="sum-w-balance" class="amount"></div>
-        </div>
+  <div id="app">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <img src="assets/logo-fainance.png" alt="FAINANCE Logo" class="logo" />
+        <h1 class="title"><span class="tight">F</span><strong>AI</strong><span class="tight">NANCE</span><sup>®</sup></h1>
       </div>
-
-      <div class="card">
-        <div class="row">
-          <div>Patricia – Einnahmen</div><div id="sum-p-income" class="amount"></div>
-        </div>
-        <div class="row">
-          <div>Ausgaben</div><div id="sum-p-expense" class="amount"></div>
-        </div>
-        <div class="row total">
-          <div>Bilanz</div><div id="sum-p-balance" class="amount"></div>
-        </div>
+      <div class="header-right">
+        <span id="sync-indicator" class="sync-badge">Offline</span>
       </div>
+    </header>
 
-      <div class="card">
-        <div class="row">
-          <div>Gemeinsam – Einnahmen</div><div id="sum-j-income" class="amount"></div>
+    <!-- Monat-Auswahl (sticky unter Header) -->
+    <div class="monthbar">
+      <label for="monthSelect" class="sr-only">Monat wählen</label>
+      <select id="monthSelect" class="month-select" aria-label="Monat wählen"></select>
+    </div>
+
+    <!-- Login (nur sichtbar, wenn nicht angemeldet) -->
+    <main id="login-screen" class="screen hidden">
+      <section class="card">
+        <h2>Anmelden</h2>
+        <p class="muted">Einmal einloggen, danach automatisch eingeloggt auf diesem Gerät.</p>
+        <div class="form">
+          <label>E-Mail
+            <input type="email" id="email" inputmode="email" autocomplete="username" placeholder="name@domain.ch" />
+          </label>
+          <label>Passwort
+            <input type="password" id="password" autocomplete="current-password" placeholder="********" />
+          </label>
+          <button id="btn-login" class="btn primary">Anmelden</button>
+          <p id="login-error" class="error hidden"></p>
         </div>
-        <div class="row">
-          <div>Ausgaben</div><div id="sum-j-expense" class="amount"></div>
+      </section>
+    </main>
+
+    <!-- App-Inhalt (nur sichtbar, wenn angemeldet) -->
+    <main id="app-screen" class="screen hidden">
+      <!-- Seitencontainer -->
+      <section id="view-dashboard" class="view active">
+        <div class="card">
+          <h2>Gesamtübersicht</h2>
+          <div class="row spread muted"><span>Einnahmen</span><span id="sum-income">CHF 0.00</span></div>
+          <div class="row spread muted"><span>Ausgaben</span><span id="sum-expense">CHF 0.00</span></div>
+          <div class="row spread total"><span>Bilanz</span><span id="sum-balance">CHF 0.00</span></div>
         </div>
-        <div class="row total">
-          <div>Bilanz</div><div id="sum-j-balance" class="amount"></div>
-        </div>
-      </div>
-    </section>
 
-    <section id="view-wallace" class="view" aria-labelledby="wallace-tab">
-      <h2>Wallace</h2>
-      <div class="card">
-        <div class="row"><div>Einnahmen</div><div id="w-income" class="amount"></div></div>
-        <div class="row"><div>Ausgaben</div><div id="w-expense" class="amount"></div></div>
-        <div class="row total"><div>Bilanz</div><div id="w-balance" class="amount"></div></div>
-      </div>
-    </section>
-
-    <section id="view-patricia" class="view" aria-labelledby="patricia-tab">
-      <h2>Patricia</h2>
-      <div class="card">
-        <div class="row"><div>Einnahmen</div><div id="p-income" class="amount"></div></div>
-        <div class="row"><div>Ausgaben</div><div id="p-expense" class="amount"></div></div>
-        <div class="row total"><div>Bilanz</div><div id="p-balance" class="amount"></div></div>
-      </div>
-    </section>
-
-    <section id="view-joint" class="view" aria-labelledby="joint-tab">
-      <h2>Gemeinsam</h2>
-      <div class="card">
-        <div class="row"><div>Einnahmen</div><div id="j-income" class="amount"></div></div>
-        <div class="row"><div>Ausgaben</div><div id="j-expense" class="amount"></div></div>
-        <div class="row total"><div>Bilanz</div><div id="j-balance" class="amount"></div></div>
-      </div>
-    </section>
-
-    <section id="view-settings" class="view" aria-labelledby="settings-tab">
-      <h2>Einstellungen</h2>
-
-      <!-- Hinweis -->
-      <div class="note">Änderungen werden <strong>erst beim Speichern</strong> übernommen.</div>
-
-      <!-- Formulare -->
-      <form id="form-settings" novalidate>
-        <!-- Wallace -->
-        <div class="group">
-          <h3>Wallace</h3>
-          <h4>Einnahmen</h4>
-          <div class="grid">
-            <input data-path="wallace.income[0].name" placeholder="Bezeichnung" />
-            <input data-path="wallace.income[0].value" placeholder="Betrag (CHF)" inputmode="decimal" />
-            <input data-path="wallace.income[1].name" placeholder="Bezeichnung" />
-            <input data-path="wallace.income[1].value" placeholder="Betrag (CHF)" inputmode="decimal" />
+        <div class="card">
+          <div class="card-head">
+            <h3>Wallace</h3><span class="badge" id="badge-w">IST</span>
           </div>
-
-          <h4>Ausgaben</h4>
-          <div class="grid">
-            <input data-path="wallace.expense[0].name" placeholder="Bezeichnung" />
-            <input data-path="wallace.expense[0].value" placeholder="Betrag (CHF)" inputmode="decimal" />
-            <input data-path="wallace.expense[1].name" placeholder="Bezeichnung" />
-            <input data-path="wallace.expense[1].value" placeholder="Betrag (CHF)" inputmode="decimal" />
+          <div class="mini-bars">
+            <div class="bar">
+              <div class="bar-label">Einnahmen</div>
+              <div class="bar-track"><div class="bar-fill income" style="width: 40%"></div></div>
+              <div class="bar-value" id="w-income">CHF 0.00</div>
+            </div>
+            <div class="bar">
+              <div class="bar-label">Ausgaben</div>
+              <div class="bar-track"><div class="bar-fill expense" style="width: 20%"></div></div>
+              <div class="bar-value" id="w-expense">CHF 0.00</div>
+            </div>
           </div>
+          <div class="row spread"><span>Bilanz</span><span id="w-balance">CHF 0.00</span></div>
         </div>
 
-        <!-- Patricia -->
-        <div class="group">
-          <h3>Patricia</h3>
-          <h4>Einnahmen</h4>
-          <div class="grid">
-            <input data-path="patricia.income[0].name" placeholder="Bezeichnung" />
-            <input data-path="patricia.income[0].value" placeholder="Betrag (CHF)" inputmode="decimal" />
-            <input data-path="patricia.income[1].name" placeholder="Bezeichnung" />
-            <input data-path="patricia.income[1].value" placeholder="Betrag (CHF)" inputmode="decimal" />
+        <div class="card">
+          <div class="card-head">
+            <h3>Patricia</h3><span class="badge" id="badge-p">IST</span>
           </div>
+          <div class="mini-bars">
+            <div class="bar">
+              <div class="bar-label">Einnahmen</div>
+              <div class="bar-track"><div class="bar-fill income" style="width: 50%"></div></div>
+              <div class="bar-value" id="p-income">CHF 0.00</div>
+            </div>
+            <div class="bar">
+              <div class="bar-label">Ausgaben</div>
+              <div class="bar-track"><div class="bar-fill expense" style="width: 30%"></div></div>
+              <div class="bar-value" id="p-expense">CHF 0.00</div>
+            </div>
+          </div>
+          <div class="row spread"><span>Bilanz</span><span id="p-balance">CHF 0.00</span></div>
+        </div>
 
-          <h4>Ausgaben</h4>
-          <div class="grid">
-            <input data-path="patricia.expense[0].name" placeholder="Bezeichnung" />
-            <input data-path="patricia.expense[0].value" placeholder="Betrag (CHF)" inputmode="decimal" />
-            <input data-path="patricia.expense[1].name" placeholder="Bezeichnung" />
-            <input data-path="patricia.expense[1].value" placeholder="Betrag (CHF)" inputmode="decimal" />
+        <div class="card">
+          <div class="card-head">
+            <h3>Gemeinsam</h3><span class="badge" id="badge-s">IST</span>
+          </div>
+          <div class="mini-bars">
+            <div class="bar">
+              <div class="bar-label">Einnahmen</div>
+              <div class="bar-track"><div class="bar-fill income" style="width: 30%"></div></div>
+              <div class="bar-value" id="s-income">CHF 0.00</div>
+            </div>
+            <div class="bar">
+              <div class="bar-label">Ausgaben</div>
+              <div class="bar-track"><div class="bar-fill expense" style="width: 25%"></div></div>
+              <div class="bar-value" id="s-expense">CHF 0.00</div>
+            </div>
+          </div>
+          <div class="row spread"><span>Bilanz</span><span id="s-balance">CHF 0.00</span></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head tight-head">
+            <h3>Schulden Übersicht</h3>
+          </div>
+          <div class="row stack">
+            <div class="row spread muted"><span>Wallace</span><span id="debt-w">CHF 0.00 | 0/Mt</span></div>
+            <div class="row spread muted"><span>Patricia</span><span id="debt-p">CHF 0.00 | 0/Mt</span></div>
+            <div class="row spread muted"><span>Gemeinsam</span><span id="debt-s">CHF 0.00 | 0/Mt</span></div>
+            <div class="divider"></div>
+            <div class="row spread total"><span>Total</span><span id="debt-total">CHF 0.00</span></div>
           </div>
         </div>
+      </section>
 
-        <!-- Gemeinsam -->
-        <div class="group">
-          <h3>Gemeinsam</h3>
-          <h4>Einnahmen</h4>
-          <div class="grid">
-            <input data-path="joint.income[0].name" placeholder="Bezeichnung" />
-            <input data-path="joint.income[0].value" placeholder="Betrag (CHF)" inputmode="decimal" />
-          </div>
+      <section id="view-wallace" class="view">
+        <div class="card"><h2>Wallace (V1 – Vorschau)</h2><p class="muted">Detail-Analysen folgen in M3–M5.</p></div>
+      </section>
 
-          <h4>Ausgaben</h4>
-          <div class="grid">
-            <input data-path="joint.expense[0].name" placeholder="Bezeichnung" />
-            <input data-path="joint.expense[0].value" placeholder="Betrag (CHF)" inputmode="decimal" />
+      <section id="view-patricia" class="view">
+        <div class="card"><h2>Patricia (V1 – Vorschau)</h2><p class="muted">Detail-Analysen folgen in M3–M5.</p></div>
+      </section>
+
+      <section id="view-shared" class="view">
+        <div class="card"><h2>Gemeinsam (V1 – Vorschau)</h2><p class="muted">Detail-Analysen folgen in M3–M5.</p></div>
+      </section>
+
+      <section id="view-settings" class="view">
+        <div class="card">
+          <h2>Einstellungen</h2>
+          <p class="muted">Hier kommt der gesamte Editor (M2–M4). In M1 ist nur die Shell & Navigation.</p>
+          <div class="row spread muted"><span>Status</span><span id="whoami">–</span></div>
+          <div class="row end">
+            <button id="btn-logout" class="btn">Abmelden</button>
           </div>
         </div>
+      </section>
+    </main>
 
-        <div class="actions">
-          <button type="button" id="btn-cancel" class="btn ghost">Zurücksetzen</button>
-          <button type="submit" class="btn primary">Speichern</button>
-        </div>
-      </form>
-    </section>
-  </main>
+    <!-- Tabbar -->
+    <nav class="tabbar">
+      <button class="tab active" data-target="dashboard">Dashboard</button>
+      <button class="tab" data-target="wallace">Wallace</button>
+      <button class="tab" data-target="patricia">Patricia</button>
+      <button class="tab" data-target="shared">Gemeinsam</button>
+      <button class="tab" data-target="settings">Einstellungen</button>
+    </nav>
+  </div>
 
-  <!-- Bottom Nav -->
-  <nav class="tabbar" aria-label="Navigation">
-    <button id="home-tab" data-target="view-home" class="tab active">Home</button>
-    <button id="wallace-tab" data-target="view-wallace" class="tab">Wallace</button>
-    <button id="patricia-tab" data-target="view-patricia" class="tab">Patricia</button>
-    <button id="joint-tab" data-target="view-joint" class="tab">Gemeinsam</button>
-    <button id="settings-tab" data-target="view-settings" class="tab">Einstellungen</button>
-  </nav>
-
-  <script src="app.js"></script>
+  <script src="app.js" type="module"></script>
 </body>
 </html>
