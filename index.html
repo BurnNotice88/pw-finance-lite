@@ -7,103 +7,121 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Header mit Logo -->
+  <!-- Header / Branding -->
   <header class="app-header">
-    <img src="./logo-fainance.png" alt="FAINANCE Logo" class="logo" />
+    <div class="brand">
+      <img src="./logo-fainance.png" alt="FAINANCE" class="brand-logo" />
+      <span class="brand-text">FAINANCE<sup>®</sup></span>
+    </div>
   </header>
 
-  <main class="app-main">
-    <!-- Home -->
-    <section id="view-home" class="view is-active">
-      <h1 class="title">Übersicht</h1>
+  <!-- Seitencontainer -->
+  <main id="pages">
 
-      <div class="card">
-        <div class="row">
-          <div class="label"><strong>Wallace</strong> – Einnahmen</div>
-          <div class="value">CHF 5’550.00</div>
-        </div>
-        <div class="row">
-          <div class="label">Ausgaben</div>
-          <div class="value">CHF 2’360.00</div>
-        </div>
-        <div class="row total">
-          <div class="label">Bilanz</div>
-          <div class="value positive">CHF 3’190.00</div>
-        </div>
+    <!-- HOME -->
+    <section id="page-home" class="page page--active" aria-labelledby="home-title">
+      <div class="page-inner">
+        <h1 id="home-title" class="h1">Übersicht</h1>
+
+        <article class="card">
+          <header class="card-title">
+            <strong>Wallace</strong> – Einnahmen
+            <span class="card-value">CHF 5’550.00</span>
+          </header>
+          <div class="card-row">
+            <span>Ausgaben</span>
+            <span class="card-value">CHF 2’360.00</span>
+          </div>
+          <footer class="card-balance">
+            <span>Bilanz</span>
+            <span class="balance-positive">CHF 3’190.00</span>
+          </footer>
+        </article>
+
+        <article class="card">
+          <header class="card-title">
+            <strong>Patricia</strong> – Einnahmen
+            <span class="card-value">CHF 5’200.00</span>
+          </header>
+          <div class="card-row">
+            <span>Ausgaben</span>
+            <span class="card-value">CHF 2’220.00</span>
+          </div>
+          <footer class="card-balance">
+            <span>Bilanz</span>
+            <span class="balance-positive">CHF 2’980.00</span>
+          </footer>
+        </article>
+
+        <article class="card">
+          <header class="card-title">
+            <strong>Gemeinsam</strong> – Einnahmen
+            <span class="card-value">CHF 10’750.00</span>
+          </header>
+          <div class="card-row">
+            <span>Ausgaben</span>
+            <span class="card-value">CHF 4’580.00</span>
+          </div>
+          <footer class="card-balance">
+            <span>Bilanz</span>
+            <span class="balance-positive">CHF 6’170.00</span>
+          </footer>
+        </article>
+
+        <article class="card">
+          <header class="card-title">
+            Monatsverlauf (Bilanz)
+          </header>
+          <div class="chart-placeholder">
+            Beispieldaten – können wir später aus Firestore füttern.
+          </div>
+        </article>
       </div>
+    </section>
 
-      <div class="card">
-        <div class="row">
-          <div class="label"><strong>Patricia</strong> – Einnahmen</div>
-          <div class="value">CHF 5’200.00</div>
-        </div>
-        <div class="row">
-          <div class="label">Ausgaben</div>
-          <div class="value">CHF 2’220.00</div>
-        </div>
-        <div class="row total">
-          <div class="label">Bilanz</div>
-          <div class="value positive">CHF 2’980.00</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="row">
-          <div class="label"><strong>Gemeinsam</strong> – Einnahmen</div>
-          <div class="value">CHF 10’750.00</div>
-        </div>
-        <div class="row">
-          <div class="label">Ausgaben</div>
-          <div class="value">CHF 4’580.00</div>
-        </div>
-        <div class="row total">
-          <div class="label">Bilanz</div>
-          <div class="value positive">CHF 6’170.00</div>
-        </div>
-      </div>
-
-      <!-- Monatsverlauf mit Balken-Chart -->
-      <div class="card chart-card">
-        <h2 class="subtitle">Monatsverlauf (Bilanz)</h2>
-        <canvas id="chart-balance" aria-label="Balkendiagramm Bilanz der letzten Monate" role="img"></canvas>
-        <p class="chart-caption">Beispieldaten – können wir später aus Firestore füttern.</p>
+    <!-- WALLACE -->
+    <section id="page-wallace" class="page" aria-labelledby="wallace-title">
+      <div class="page-inner">
+        <h1 id="wallace-title" class="h1">Wallace</h1>
+        <article class="card"><header class="card-title">Wallace-Inhalte …</header></article>
       </div>
     </section>
 
-    <!-- Wallace -->
-    <section id="view-wallace" class="view">
-      <h1 class="title">Wallace</h1>
-      <div class="card"><p>Wallace-Inhalte …</p></div>
+    <!-- PATRICIA -->
+    <section id="page-patricia" class="page" aria-labelledby="patricia-title">
+      <div class="page-inner">
+        <h1 id="patricia-title" class="h1">Patricia</h1>
+        <article class="card"><header class="card-title">Patricia-Inhalte …</header></article>
+      </div>
     </section>
 
-    <!-- Patricia -->
-    <section id="view-patricia" class="view">
-      <h1 class="title">Patricia</h1>
-      <div class="card"><p>Patricia-Inhalte …</p></div>
+    <!-- GEMEINSAM -->
+    <section id="page-gemeinsam" class="page" aria-labelledby="gemeinsam-title">
+      <div class="page-inner">
+        <h1 id="gemeinsam-title" class="h1">Gemeinsam</h1>
+        <article class="card"><header class="card-title">Gemeinsame Inhalte …</header></article>
+      </div>
     </section>
 
-    <!-- Gemeinsam -->
-    <section id="view-gemeinsam" class="view">
-      <h1 class="title">Gemeinsam</h1>
-      <div class="card"><p>Gemeinsame Inhalte …</p></div>
+    <!-- MEHR -->
+    <section id="page-mehr" class="page" aria-labelledby="mehr-title">
+      <div class="page-inner">
+        <h1 id="mehr-title" class="h1">Mehr</h1>
+        <article class="card"><header class="card-title">Einstellungen / Login / Export …</header></article>
+      </div>
     </section>
 
-    <!-- Mehr -->
-    <section id="view-mehr" class="view">
-      <h1 class="title">Mehr</h1>
-      <div class="card"><p>Einstellungen / Login / Export …</p></div>
-    </section>
   </main>
 
-  <!-- Tabbar unten -->
-  <nav class="tabbar">
-    <button class="tab is-active" data-target="home">Home</button>
-    <button class="tab" data-target="wallace">Wallace</button>
-    <button class="tab" data-target="patricia">Patricia</button>
-    <button class="tab" data-target="gemeinsam">Gemeinsam</button>
-    <button class="tab" data-target="mehr">Mehr</button>
+  <!-- Tabbar -->
+  <nav class="tabbar" aria-label="Hauptnavigation">
+    <button class="tabbar-btn tabbar-btn--active" data-target="home">Home</button>
+    <button class="tabbar-btn" data-target="wallace">Wallace</button>
+    <button class="tabbar-btn" data-target="patricia">Patricia</button>
+    <button class="tabbar-btn" data-target="gemeinsam">Gemeinsam</button>
+    <button class="tabbar-btn" data-target="mehr">Mehr</button>
   </nav>
 
-  <script src="app.js" defer></script>
+  <script src="app.js"></script>
 </body>
 </html>
